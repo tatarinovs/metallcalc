@@ -94,16 +94,16 @@ class AppTheme {
           side: const BorderSide(color: divider),
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: background,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           color: textPrimary,
           fontWeight: FontWeight.w700,
           fontSize: 20,
         ),
-        iconTheme: const IconThemeData(color: textSecondary),
+        iconTheme: IconThemeData(color: textSecondary),
       ),
       dividerTheme: const DividerThemeData(
         color: divider,

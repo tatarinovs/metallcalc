@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'screens/calculator_screen.dart';
 
-void main() {
+import 'services/prefs.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initPrefs();
   runApp(const MetallCalcApp());
 }
 

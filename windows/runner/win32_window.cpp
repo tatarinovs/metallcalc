@@ -183,21 +183,32 @@ Win32Window::MessageHandler(HWND hwnd,
       WINDOWPLACEMENT placement;
       placement.length = sizeof(WINDOWPLACEMENT);
       if (GetWindowPlacement(hwnd, &placement)) {
-        HKEY hKey;
-        if (RegCreateKeyEx(HKEY_CURRENT_USER, L"Software\\MetallCalc", 0, nullptr,
-                           REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey,
-                           nullptr) == ERROR_SUCCESS) {
-          RegSetValueEx(hKey, L"WindowLeft", 0, REG_DWORD,
-                        reinterpret_cast<const BYTE*>(&placement.rcNormalPosition.left), sizeof(DWORD));
-          RegSetValueEx(hKey, L"WindowTop", 0, REG_DWORD,
-                        reinterpret_cast<const BYTE*>(&placement.rcNormalPosition.top), sizeof(DWORD));
-          DWORD width = placement.rcNormalPosition.right - placement.rcNormalPosition.left;
-          DWORD height = placement.rcNormalPosition.bottom - placement.rcNormalPosition.top;
-          RegSetValueEx(hKey, L"WindowWidth", 0, REG_DWORD,
-                        reinterpret_cast<const BYTE*>(&width), sizeof(DWORD));
-          RegSetValueEx(hKey, L"WindowHeight", 0, REG_DWORD,
-                        reinterpret_cast<const BYTE*>(&height), sizeof(DWORD));
-          RegCloseKey(hKey);
+        UINT dpi = GetDpiForWindow(hwnd);
+        double scale = dpi / 96.0;
+
+        LONG left = static_cast<LONG>(placement.rcNormalPosition.left / scale);
+        LONG top = static_cast<LONG>(placement.rcNormalPosition.top / scale);
+        DWORD width = static_cast<DWORD>(
+            (placement.rcNormalPosition.right - placement.rcNormalPosition.left) / scale);
+        DWORD height = static_cast<DWORD>(
+            (placement.rcNormalPosition.bottom - placement.rcNormalPosition.top) / scale);
+
+        // страховка от вырожденных значений
+        if (width >= 200 && height >= 150) {
+          HKEY hKey;
+          if (RegCreateKeyEx(HKEY_CURRENT_USER, L"Software\\MetallCalc", 0, nullptr,
+                             REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey,
+                             nullptr) == ERROR_SUCCESS) {
+            RegSetValueEx(hKey, L"WindowLeft", 0, REG_DWORD,
+                          reinterpret_cast<const BYTE*>(&left), sizeof(DWORD));
+            RegSetValueEx(hKey, L"WindowTop", 0, REG_DWORD,
+                          reinterpret_cast<const BYTE*>(&top), sizeof(DWORD));
+            RegSetValueEx(hKey, L"WindowWidth", 0, REG_DWORD,
+                          reinterpret_cast<const BYTE*>(&width), sizeof(DWORD));
+            RegSetValueEx(hKey, L"WindowHeight", 0, REG_DWORD,
+                          reinterpret_cast<const BYTE*>(&height), sizeof(DWORD));
+            RegCloseKey(hKey);
+          }
         }
       }
 

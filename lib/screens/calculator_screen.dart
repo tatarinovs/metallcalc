@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/prefs.dart';
 import '../models/material_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/profile_selector.dart';
@@ -16,15 +17,51 @@ class CalculatorScreen extends StatefulWidget {
 class _CalculatorScreenState extends State<CalculatorScreen> {
   ProfileType _profile = ProfileType.sheet;
   Grade? _grade;
-  List<double> _dims = [0, 0, 0];
+  // [a, b, c, d, e] — 5 измерений; неиспользуемые = 0
+  List<double> _dims = [0, 0, 0, 0, 0];
 
-  double? get _volume => _profile.calcVolume(_dims[0], _dims[1], _dims[2]);
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  void _loadProfile() {
+    final profileName = prefs.getString('selectedProfile');
+    if (profileName != null) {
+      final savedProfile = ProfileType.values.firstWhere(
+        (e) => e.name == profileName,
+        orElse: () => ProfileType.sheet,
+      );
+      setState(() {
+        _profile = savedProfile;
+      });
+    }
+  }
+
+  double? get _volume =>
+      _profile.calcVolume(_dims[0], _dims[1], _dims[2], _dims[3], _dims[4]);
+
+  double? get _linearMass {
+    if (_grade == null) return null;
+    final probe = [..._dims];
+    probe[_profile.lengthParamIndex] = 1000.0;
+    
+    final vol1m = _profile.calcVolume(
+      probe[0], probe[1], probe[2], probe[3], probe[4]
+    );
+    
+    if (vol1m == null) return null;
+    return (vol1m / 1000.0) * _grade!.density / 1000.0;
+  }
 
   void _onProfileChanged(ProfileType p) {
+    if (_profile == p) return;
     setState(() {
       _profile = p;
-      _dims = [0, 0, 0];
+      _dims = [0, 0, 0, 0, 0];
     });
+    prefs.setString('selectedProfile', p.name);
   }
 
   void _onGradeChanged(Grade? g) {
@@ -32,13 +69,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   void _onDimsChanged(List<double> d) {
-    setState(() => _dims = d);
+    setState(() {
+      _dims = List.generate(5, (i) => i < d.length ? d[i] : 0.0);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 700;
-
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
@@ -47,7 +85,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
   }
 
-  // Узкий макет (телефон / маленькое окно)
   Widget _buildNarrowLayout() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -81,6 +118,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             child: ResultDisplay(
               volumeMm3: _volume,
               densityGcm3: _grade?.density,
+              linearMassKg: _linearMass,
             ),
           ),
           const SizedBox(height: 16),
@@ -89,12 +127,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
   }
 
-  // Широкий макет (планшет / Windows)
   Widget _buildWideLayout() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Левая колонка — ввод
         Expanded(
           flex: 5,
           child: SingleChildScrollView(
@@ -126,13 +162,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
         ),
-        // Разделитель
         Container(
           width: 1,
           color: AppTheme.divider,
           margin: const EdgeInsets.symmetric(vertical: 20),
         ),
-        // Правая колонка — результат
         Expanded(
           flex: 4,
           child: Padding(
@@ -146,13 +180,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   child: ResultDisplay(
                     volumeMm3: _volume,
                     densityGcm3: _grade?.density,
+                    linearMassKg: _linearMass,
                   ),
                 ),
                 const SizedBox(height: 20),
                 _Section(
                   label: 'Формула',
                   withCard: false,
-                  child: _FormulaHint(profile: _profile, grade: _grade, dims: _dims),
+                  child: _FormulaHint(
+                      profile: _profile, grade: _grade, dims: _dims),
                 ),
               ],
             ),
@@ -163,13 +199,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 }
 
-/// Секция с плавающим заголовком снаружи карточки
 class _Section extends StatelessWidget {
   final String label;
   final Widget child;
   final bool withCard;
 
-  const _Section({required this.label, required this.child, this.withCard = true});
+  const _Section(
+      {required this.label, required this.child, this.withCard = true});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +242,6 @@ class _Section extends StatelessWidget {
   }
 }
 
-/// Подсказка с формулой (только для широкого макета)
 class _FormulaHint extends StatelessWidget {
   final ProfileType profile;
   final Grade? grade;
@@ -220,7 +255,6 @@ class _FormulaHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formula = _getFormula();
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -233,7 +267,8 @@ class _FormulaHint extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.functions_rounded, size: 14, color: AppTheme.textSecondary),
+              Icon(Icons.functions_rounded,
+                  size: 14, color: AppTheme.textSecondary),
               SizedBox(width: 6),
               Text(
                 'Формула',
@@ -248,7 +283,7 @@ class _FormulaHint extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            formula,
+            _getFormula(),
             style: const TextStyle(
               color: AppTheme.textPrimary,
               fontSize: 13,
@@ -284,6 +319,20 @@ class _FormulaHint extends StatelessWidget {
         return 'V = (√3/2) × S² × L\nm = V × ρ / 10⁶';
       case ProfileType.pipe:
         return 'V = π/4 × (D² − d²) × L\nd = D − 2t\nm = V × ρ / 10⁶';
+      case ProfileType.pipeSquare:
+        return 'V = (A² − a²) × L\na = A − 2t\nm = V × ρ / 10⁶';
+      case ProfileType.pipeRect:
+        return 'V = (A×B − a×b) × L\na = A−2t,  b = B−2t\nm = V × ρ / 10⁶';
+      case ProfileType.angle:
+        return 'V = (2A·t − t²) × L\nm = V × ρ / 10⁶';
+      case ProfileType.angleUnequal:
+        return 'V = (A + B − t) × t × L\nm = V × ρ / 10⁶';
+      case ProfileType.channel:
+        return 'V = [s·(H−2t) + 2·B·t] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
+      case ProfileType.ibeam:
+        return 'V = [s·(H−2t) + 2·B·t] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
+      case ProfileType.tbeam:
+        return 'V = [B·t + s·(H−t)] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/prefs.dart';
 import '../models/material_data.dart';
 import '../data/materials_db.dart';
 import '../theme/app_theme.dart';
@@ -16,7 +16,6 @@ class MaterialSelector extends StatefulWidget {
 class _MaterialSelectorState extends State<MaterialSelector> {
   MaterialGroup? _selectedGroup;
   Grade? _selectedGrade;
-  SharedPreferences? _prefs;
 
   @override
   void initState() {
@@ -24,15 +23,12 @@ class _MaterialSelectorState extends State<MaterialSelector> {
     _initPrefs();
   }
 
-  Future<void> _initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-
-    final lastGroup = _prefs!.getString('last_group');
+  void _initPrefs() {
+    final lastGroup = prefs.getString('last_group');
     if (lastGroup != null) {
       try {
         _selectedGroup = materialsDb.firstWhere((g) => g.name == lastGroup);
-        final lastGrade = _prefs!.getString('last_grade_${_selectedGroup!.name}');
+        final lastGrade = prefs.getString('last_grade_${_selectedGroup!.name}');
         if (lastGrade != null) {
           try {
             _selectedGrade = _selectedGroup!.grades.firstWhere((g) => g.name == lastGrade);
@@ -46,20 +42,17 @@ class _MaterialSelectorState extends State<MaterialSelector> {
       }
     }
 
-    if (_selectedGroup != null || _selectedGrade != null) {
-      setState(() {});
-      if (_selectedGrade != null) {
-        widget.onGradeChanged(_selectedGrade);
-      }
+    if (_selectedGrade != null) {
+      Future.microtask(() => widget.onGradeChanged(_selectedGrade));
     }
   }
 
   void _onGroupChanged(MaterialGroup? group) {
     if (group == null) return;
-    _prefs?.setString('last_group', group.name);
+    prefs.setString('last_group', group.name);
 
     Grade? prevGrade;
-    final lastGrade = _prefs?.getString('last_grade_${group.name}');
+    final lastGrade = prefs.getString('last_grade_${group.name}');
     if (lastGrade != null) {
       try {
         prevGrade = group.grades.firstWhere((g) => g.name == lastGrade);
@@ -68,7 +61,7 @@ class _MaterialSelectorState extends State<MaterialSelector> {
 
     if (prevGrade == null && group.grades.isNotEmpty) {
       prevGrade = group.grades.first;
-      _prefs?.setString('last_grade_${group.name}', prevGrade.name);
+      prefs.setString('last_grade_${group.name}', prevGrade.name);
     }
 
     setState(() {
@@ -80,7 +73,7 @@ class _MaterialSelectorState extends State<MaterialSelector> {
 
   void _onGradeChanged(Grade? grade) {
     if (grade != null && _selectedGroup != null) {
-      _prefs?.setString('last_grade_${_selectedGroup!.name}', grade.name);
+      prefs.setString('last_grade_${_selectedGroup!.name}', grade.name);
     }
     setState(() {
       _selectedGrade = grade;

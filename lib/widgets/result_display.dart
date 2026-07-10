@@ -16,11 +16,13 @@ String _formatValue(double val, int decimals) {
 class ResultDisplay extends StatelessWidget {
   final double? volumeMm3;   // объём в мм³
   final double? densityGcm3; // плотность г/см³
+  final double? linearMassKg; // масса 1 п.м.
 
   const ResultDisplay({
     super.key,
     required this.volumeMm3,
     required this.densityGcm3,
+    this.linearMassKg,
   });
 
   String _formatMass(double kg) {
@@ -35,14 +37,7 @@ class ResultDisplay extends StatelessWidget {
     }
   }
 
-  String _formatMassKg(double kg) {
-    if (kg < 0.001) {
-      return '${_formatValue(kg * 1e6, 3)} мг';
-    }
-    if (kg < 1.0) return '${_formatValue(kg * 1000, 3)} г';
-    if (kg >= 1000) return '${_formatValue(kg / 1000, 3)} т';
-    return '${_formatValue(kg, 3)} кг';
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +67,8 @@ class ResultDisplay extends StatelessWidget {
               key: ValueKey('${volumeCm3?.toStringAsFixed(4)}_${massKg?.toStringAsFixed(6)}'),
               volumeCm3: volumeCm3!,
               massKg: massKg!,
+              linearMassKg: linearMassKg,
               formatMass: _formatMass,
-              formatMassKg: _formatMassKg,
             )
           : _EmptyCard(
               key: const ValueKey('empty'),
@@ -87,21 +82,20 @@ class ResultDisplay extends StatelessWidget {
 class _ResultCard extends StatelessWidget {
   final double volumeCm3;
   final double massKg;
+  final double? linearMassKg;
   final String Function(double) formatMass;
-  final String Function(double) formatMassKg;
 
   const _ResultCard({
     super.key,
     required this.volumeCm3,
     required this.massKg,
+    this.linearMassKg,
     required this.formatMass,
-    required this.formatMassKg,
   });
 
   @override
   Widget build(BuildContext context) {
     final massStr = formatMass(massKg);
-    final massFullStr = formatMassKg(massKg);
 
     return Container(
       decoration: BoxDecoration(
@@ -131,11 +125,11 @@ class _ResultCard extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Clipboard.setData(ClipboardData(text: massFullStr));
+                  Clipboard.setData(ClipboardData(text: massStr));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Скопировано: $massFullStr',
+                        'Скопировано: $massStr',
                         style: const TextStyle(color: Colors.white, fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
@@ -196,9 +190,9 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _MetricChip(
-                label: 'Масса',
-                value: '${_formatValue(massKg, 3)} кг',
-                icon: Icons.monitor_weight_outlined,
+                label: 'Вес 1 п.м.',
+                value: linearMassKg != null ? '${_formatValue(linearMassKg!, 3)} кг' : '---',
+                icon: Icons.straighten_outlined,
               ),
             ],
           ),
