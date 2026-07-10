@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/prefs.dart';
 import '../models/material_data.dart';
-import '../theme/app_theme.dart';
 import '../widgets/profile_selector.dart';
 import '../widgets/material_selector.dart';
 import '../widgets/dimension_inputs.dart';
@@ -77,8 +76,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 700;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: isWide ? _buildWideLayout() : _buildNarrowLayout(),
       ),
@@ -164,7 +165,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         ),
         Container(
           width: 1,
-          color: AppTheme.divider,
+          color: Theme.of(context).colorScheme.outline,
           margin: const EdgeInsets.symmetric(vertical: 20),
         ),
         Expanded(
@@ -209,6 +210,8 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -216,8 +219,8 @@ class _Section extends StatelessWidget {
           padding: const EdgeInsets.only(left: 4),
           child: Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              color: AppTheme.textSecondary,
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.0,
@@ -229,9 +232,9 @@ class _Section extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.surface,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.divider),
+              border: Border.all(color: colorScheme.outline),
             ),
             child: child,
           )
@@ -255,25 +258,27 @@ class _FormulaHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceVariant,
+        color: colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.functions_rounded,
-                  size: 14, color: AppTheme.textSecondary),
-              SizedBox(width: 6),
+                  size: 14, color: colorScheme.onSurfaceVariant),
+              const SizedBox(width: 6),
               Text(
                 'Формула',
                 style: TextStyle(
-                  color: AppTheme.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
@@ -284,8 +289,8 @@ class _FormulaHint extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             _getFormula(),
-            style: const TextStyle(
-              color: AppTheme.textPrimary,
+            style: TextStyle(
+              color: colorScheme.onSurface,
               fontSize: 13,
               fontFamily: 'monospace',
               height: 1.5,
@@ -295,8 +300,8 @@ class _FormulaHint extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               'ρ = ${grade!.density} г/см³',
-              style: const TextStyle(
-                color: AppTheme.accent,
+              style: TextStyle(
+                color: colorScheme.primary,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),

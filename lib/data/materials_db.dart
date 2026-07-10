@@ -5,21 +5,26 @@ const List<MaterialGroup> materialsDb = [
     id: 'aluminum',
     name: 'Алюминий и сплавы',
     grades: [
-      Grade(name: 'АД0 / АД1 / АД31', density: 2.71),
+      Grade(name: '1561 / АМг5 / АМг6 / АК12 / АК12М2', density: 2.65),
+      Grade(name: 'А5 / А5М / А5Н / АД0 / АД1 / АД31', density: 2.71),
+      Grade(name: 'АК4-1 / АК8 / АК8М / Д1 / Д1Т', density: 2.80),
+      Grade(name: 'АК6', density: 2.75),
+      Grade(name: 'АК7ч / АК9ч / АМг3', density: 2.66),
+      Grade(name: 'АМг2', density: 2.69),
       Grade(name: 'АМц', density: 2.73),
-      Grade(name: 'АМг2 / АМг3', density: 2.68),
-      Grade(name: 'АМг5 / АМг6', density: 2.64),
-      Grade(name: 'Д16 (дюраль)', density: 2.78),
       Grade(name: 'В95', density: 2.85),
+      Grade(name: 'Д16', density: 2.77),
     ],
   ),
   MaterialGroup(
     id: 'bronze',
     name: 'Бронза',
     grades: [
-      Grade(name: 'БрАЖ9-4', density: 7.50),
       Grade(name: 'БрОЦС5-5-5', density: 8.80),
-      Grade(name: 'БрБ2', density: 8.26),
+      Grade(name: 'БрАЖ9-4 / БрА9Ж3Л / БрА9Мц2Л', density: 7.60),
+      Grade(name: 'БрА9Ж4Н4Мц1 / БрА10Ж3Мц2 / БрА10Ж4Н4Л', density: 7.50),
+      Grade(name: 'БрНБТ', density: 8.83),
+      Grade(name: 'БрБ2', density: 8.20),
       Grade(name: 'БрКМц3-1', density: 8.47),
     ],
   ),
@@ -42,16 +47,17 @@ const List<MaterialGroup> materialsDb = [
     id: 'brass',
     name: 'Латунь',
     grades: [
-      Grade(name: 'Л63', density: 8.44),
-      Grade(name: 'Л68 / ЛС59-1', density: 8.50),
-      Grade(name: 'ЛЖМц59-1-1', density: 8.40),
+      Grade(name: 'Л60 / ЛС59-1', density: 8.40),
+      Grade(name: 'Л63 / Л68 / ЛСД', density: 8.50),
+      Grade(name: 'Л96', density: 8.90),
+      Grade(name: 'ЛЖМц59-1-1 / ЛМц58-2', density: 8.30),
     ],
   ),
   MaterialGroup(
     id: 'copper',
     name: 'Медь',
     grades: [
-      Grade(name: 'М1 / М2 / М3', density: 8.94),
+      Grade(name: 'М00к / М1 / М2 / М3', density: 8.94),
     ],
   ),
   MaterialGroup(
@@ -102,6 +108,32 @@ const List<MaterialGroup> materialsDb = [
     ],
   ),
   MaterialGroup(
+    id: 'titanium',
+    name: 'Титан и сплавы',
+    grades: [
+      Grade(name: 'ВТ20 / ОТ4', density: 4.40),
+      Grade(name: 'ВТ6', density: 4.45),
+      Grade(name: 'ВТ8', density: 4.48),
+      Grade(name: 'ВТ1-0 / ВТ1-00', density: 4.51),
+      Grade(name: 'ВТ22', density: 4.55),
+    ],
+  ),
+  MaterialGroup(
+    id: 'zinc',
+    name: 'Цинк',
+    grades: [
+      Grade(name: 'Ц0 / ЦВ0', density: 7.13),
+      Grade(name: 'ЦАМ4-1', density: 6.70),
+    ],
+  ),
+  MaterialGroup(
+    id: 'tin',
+    name: 'Олово',
+    grades: [
+      Grade(name: 'О1 / О1пч', density: 7.30),
+    ],
+  ),
+  MaterialGroup(
     id: 'steel_high_speed',
     name: 'Сталь быстрорежущая',
     grades: [
@@ -130,6 +162,7 @@ const List<MaterialGroup> materialsDb = [
     grades: [
       Grade(name: '12Х18Н10Т / AISI 321', density: 7.92),
       Grade(name: '08Х18Н10 / AISI 304', density: 7.90),
+      Grade(name: '10Х17Н13М2Т / AISI 316Ti', density: 7.96),
       Grade(name: '20Х13 / 40Х13 / 08Х17Т / AISI 430', density: 7.70),
     ],
   ),
@@ -144,24 +177,7 @@ const List<MaterialGroup> materialsDb = [
     id: 'steel_carbon',
     name: 'Сталь углеродистая',
     grades: [
-      Grade(name: 'Ст3сп / Ст3пс / Ст20 / Ст45', density: 7.85),
-    ],
-  ),
-  MaterialGroup(
-    id: 'titanium',
-    name: 'Титан и сплавы',
-    grades: [
-      Grade(name: 'ВТ1-0 / ВТ1-00', density: 4.51),
-      Grade(name: 'ВТ6 / ОТ4', density: 4.43),
-      Grade(name: 'ВТ20', density: 4.45),
-    ],
-  ),
-  MaterialGroup(
-    id: 'zinc',
-    name: 'Цинк',
-    grades: [
-      Grade(name: 'Ц0 / ЦВ0', density: 7.14),
-      Grade(name: 'ЦАМ4-1', density: 6.70),
+      Grade(name: '65Г / СВ08А / Ст3пс / Ст20 / Ст45', density: 7.85),
     ],
   ),
   MaterialGroup(
@@ -182,7 +198,7 @@ const List<MaterialGroup> materialsDb = [
     id: 'cast_iron_grey',
     name: 'Чугун серый',
     grades: [
-      Grade(name: 'СЧ15 / СЧ20', density: 7.10),
+      Grade(name: 'АСЧ-4 / СЧ15 / СЧ20', density: 7.10),
     ],
   ),
 ];

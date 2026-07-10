@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/material_data.dart';
-import '../theme/app_theme.dart';
 
 class DimensionInputs extends StatefulWidget {
   final ProfileType profile;
@@ -143,13 +142,15 @@ class _DimensionInputsState extends State<DimensionInputs> {
   }
 
   Widget _buildField(String label, TextEditingController controller) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
+          style: TextStyle(
+            color: colorScheme.onSurfaceVariant,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -165,15 +166,15 @@ class _DimensionInputsState extends State<DimensionInputs> {
             _DecimalTextInputFormatter(),
             _MaxLengthFormatter(10),
           ],
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
+          style: TextStyle(
+            color: colorScheme.onSurface,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             suffixText: 'мм',
             suffixStyle: TextStyle(
-              color: AppTheme.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontSize: 12,
             ),
             hintText: '0',

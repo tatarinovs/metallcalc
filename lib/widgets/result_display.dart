@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../theme/app_theme.dart';
 
 String _formatValue(double val, int decimals) {
   String s = val.toStringAsFixed(decimals);
@@ -96,16 +95,20 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final massStr = formatMass(massKg);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0D2137), Color(0xFF0A1628)],
+          colors: theme.brightness == Brightness.dark
+              ? const [Color(0xFF0D2137), Color(0xFF0A1628)]
+              : [colorScheme.surface, colorScheme.surfaceContainer],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.4), width: 1.5),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.4), width: 1.5),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -114,10 +117,10 @@ class _ResultCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Результат',
                 style: TextStyle(
-                  color: AppTheme.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.8,
@@ -134,7 +137,7 @@ class _ResultCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       duration: const Duration(seconds: 2),
-                      backgroundColor: AppTheme.accentDark,
+                      backgroundColor: colorScheme.secondary,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       margin: const EdgeInsets.only(bottom: 20, left: 60, right: 60),
@@ -144,18 +147,18 @@ class _ResultCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.accent.withValues(alpha: 0.12),
+                    color: colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
+                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.copy_rounded, size: 12, color: AppTheme.accent),
-                      SizedBox(width: 4),
+                      Icon(Icons.copy_rounded, size: 12, color: colorScheme.primary),
+                      const SizedBox(width: 4),
                       Text(
                         'Копировать',
-                        style: TextStyle(color: AppTheme.accent, fontSize: 11),
+                        style: TextStyle(color: colorScheme.primary, fontSize: 11),
                       ),
                     ],
                   ),
@@ -167,8 +170,8 @@ class _ResultCard extends StatelessWidget {
           // Масса крупно
           Text(
             massStr,
-            style: const TextStyle(
-              color: AppTheme.accent,
+            style: TextStyle(
+              color: colorScheme.primary,
               fontSize: 38,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
@@ -176,7 +179,7 @@ class _ResultCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Divider(height: 1, color: AppTheme.divider),
+          Divider(height: 1, color: colorScheme.outline),
           const SizedBox(height: 10),
           // Детали
           Row(
@@ -215,17 +218,19 @@ class _MetricChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceVariant,
+          color: colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppTheme.divider),
+          border: Border.all(color: colorScheme.outline),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 14, color: AppTheme.textSecondary),
+            Icon(icon, size: 14, color: colorScheme.onSurfaceVariant),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -233,16 +238,16 @@ class _MetricChip extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 10,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -266,6 +271,8 @@ class _EmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final msg = noMaterial
         ? 'Выберите материал и введите размеры'
         : 'Введите все размеры для расчёта';
@@ -273,9 +280,9 @@ class _EmptyCard extends StatelessWidget {
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.divider),
+        border: Border.all(color: colorScheme.outline),
       ),
       child: Center(
         child: Column(
@@ -283,14 +290,14 @@ class _EmptyCard extends StatelessWidget {
           children: [
             Icon(
               Icons.calculate_outlined,
-              color: AppTheme.textSecondary.withValues(alpha: 0.4),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
               size: 28,
             ),
             const SizedBox(height: 8),
             Text(
               msg,
               style: TextStyle(
-                color: AppTheme.textSecondary.withValues(alpha: 0.6),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
               textAlign: TextAlign.center,

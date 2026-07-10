@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/material_data.dart';
-import '../theme/app_theme.dart';
 
 // Профили, отображаемые отдельными кнопками
 const _mainProfiles = [
@@ -125,13 +124,15 @@ class _GroupDropdownButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return PopupMenuButton<ProfileType>(
       tooltip: '', // Убираем дефолтную подсказку "Show menu"
       offset: const Offset(0, 72),
-      color: AppTheme.surface,
+      color: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: AppTheme.divider),
+        side: BorderSide(color: colorScheme.outline),
       ),
       elevation: 8,
       shadowColor: Colors.black54,
@@ -167,16 +168,18 @@ class _DropdownMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: isSelected
-            ? AppTheme.accent.withValues(alpha: 0.15)
+            ? colorScheme.primary.withValues(alpha: 0.15)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isSelected ? AppTheme.accent : Colors.transparent,
+          color: isSelected ? colorScheme.primary : Colors.transparent,
           width: 1.2,
         ),
       ),
@@ -188,7 +191,7 @@ class _DropdownMenuItem extends StatelessWidget {
             child: CustomPaint(
               painter: _ProfilePainter(
                 type: type,
-                color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+                color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -196,14 +199,14 @@ class _DropdownMenuItem extends StatelessWidget {
           Text(
             type.label,
             style: TextStyle(
-              color: isSelected ? AppTheme.accent : AppTheme.textPrimary,
+              color: isSelected ? colorScheme.primary : colorScheme.onSurface,
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
           if (isSelected) ...[
             const Spacer(),
-            const Icon(Icons.check_rounded, size: 16, color: AppTheme.accent),
+            Icon(Icons.check_rounded, size: 16, color: colorScheme.primary),
           ],
         ],
       ),
@@ -227,18 +230,19 @@ class _ProfileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = isSelected ? AppTheme.accent : AppTheme.textSecondary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final iconColor = isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: isSelected
-            ? AppTheme.accent.withValues(alpha: 0.15)
-            : AppTheme.surfaceVariant,
+            ? colorScheme.primary.withValues(alpha: 0.15)
+            : colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected ? AppTheme.accent : AppTheme.divider,
+          color: isSelected ? colorScheme.primary : colorScheme.outline,
           width: isSelected ? 1.5 : 1,
         ),
       ),

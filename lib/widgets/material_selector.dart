@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/prefs.dart';
 import '../models/material_data.dart';
 import '../data/materials_db.dart';
-import '../theme/app_theme.dart';
 
 class MaterialSelector extends StatefulWidget {
   final ValueChanged<Grade?> onGradeChanged;
@@ -132,13 +131,15 @@ class _StyledDropdown<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
+          style: TextStyle(
+            color: colorScheme.onSurfaceVariant,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -146,29 +147,29 @@ class _StyledDropdown<T> extends StatelessWidget {
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
-            color: enabled ? AppTheme.surfaceVariant : AppTheme.surface,
+            color: enabled ? colorScheme.surfaceContainer : colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: enabled ? AppTheme.divider : AppTheme.divider.withValues(alpha: 0.4),
+              color: enabled ? colorScheme.outline : colorScheme.outline.withValues(alpha: 0.4),
             ),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<T>(
               value: value,
               isExpanded: true,
-              dropdownColor: AppTheme.surface,
+              dropdownColor: colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               padding: const EdgeInsets.symmetric(horizontal: 14),
               hint: Text(
                 hint,
                 style: TextStyle(
-                  color: AppTheme.textSecondary.withValues(alpha: enabled ? 1.0 : 0.5),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: enabled ? 1.0 : 0.5),
                   fontSize: 14,
                 ),
               ),
               icon: Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: enabled ? AppTheme.textSecondary : AppTheme.divider,
+                color: enabled ? colorScheme.onSurfaceVariant : colorScheme.outline,
               ),
               items: enabled
                   ? items.map((item) {
@@ -176,8 +177,8 @@ class _StyledDropdown<T> extends StatelessWidget {
                         value: item,
                         child: Text(
                           displayText(item),
-                          style: const TextStyle(
-                            color: AppTheme.textPrimary,
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
                             fontSize: 14,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -191,8 +192,8 @@ class _StyledDropdown<T> extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     displayText(item),
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
                       fontSize: 14,
                     ),
                     overflow: TextOverflow.ellipsis,

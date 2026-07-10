@@ -246,9 +246,13 @@ Win32Window::MessageHandler(HWND hwnd,
       }
       return 0;
 
+    case WM_SETTINGCHANGE:
+      UpdateTheme(hwnd);
+      break; // Let DefWindowProc handle it as well
+
     case WM_DWMCOLORIZATIONCOLORCHANGED:
       UpdateTheme(hwnd);
-      return 0;
+      break;
   }
 
   return DefWindowProc(window_handle_, message, wparam, lparam);
@@ -315,6 +319,9 @@ void Win32Window::UpdateTheme(HWND const window) {
 
   if (result == ERROR_SUCCESS) {
     BOOL enable_dark_mode = light_mode == 0;
+    // Attempt Windows 10 versions 1809-1903 (attribute 19)
+    DwmSetWindowAttribute(window, 19, &enable_dark_mode, sizeof(enable_dark_mode));
+    // Attempt Windows 10 version 2004+ and Windows 11 (attribute 20)
     DwmSetWindowAttribute(window, DWMWA_USE_IMMERSIVE_DARK_MODE,
                           &enable_dark_mode, sizeof(enable_dark_mode));
   }
