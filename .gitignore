@@ -15,8 +15,8 @@ releases/
 *.iml
 *.iws
 *.ipr
-*.html
-*.js
+/calc.html
+/calc.js
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -27,9 +27,6 @@ releases/
 .pub-cache/
 .pub/
 /build/
-
-# Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols
@@ -56,3 +53,4 @@ key.properties
 
 # Enigma Virtual Box
 *.evb
+!metallcalc.evb

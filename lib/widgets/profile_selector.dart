@@ -52,12 +52,21 @@ class ProfileSelector extends StatelessWidget {
             return Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: GestureDetector(
-                  onTap: () => onChanged(p),
-                  child: _ProfileButton(
-                    type: p,
-                    label: p.label,
-                    isSelected: isSelected,
+                child: Semantics(
+                  button: true,
+                  selected: isSelected,
+                  label: p.label,
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => onChanged(p),
+                      child: _ProfileButton(
+                        type: p,
+                        label: p.label,
+                        isSelected: isSelected,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -127,7 +136,7 @@ class _GroupDropdownButton extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return PopupMenuButton<ProfileType>(
-      tooltip: '', // Убираем дефолтную подсказку "Show menu"
+      tooltip: 'Выбрать: $groupLabel',
       offset: const Offset(0, 72),
       color: colorScheme.surface,
       shape: RoundedRectangleBorder(
@@ -191,7 +200,9 @@ class _DropdownMenuItem extends StatelessWidget {
             child: CustomPaint(
               painter: _ProfilePainter(
                 type: type,
-                color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -231,7 +242,8 @@ class _ProfileButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final iconColor = isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
+    final iconColor =
+        isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -387,7 +399,8 @@ class _ProfilePainter extends CustomPainter {
           ..moveTo(3, 3)
           ..lineTo(3, h - 3)
           ..lineTo(w - 3, h - 3);
-        canvas.drawPath(p, stroke); // ignore: no_leading_underscores_for_local_identifiers
+        canvas.drawPath(
+            p, stroke); // ignore: no_leading_underscores_for_local_identifiers
         break;
 
       // Уголок неравнополочный (короткая вертикальная плеча, длинная горизонтальная)

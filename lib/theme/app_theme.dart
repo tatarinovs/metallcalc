@@ -41,26 +41,26 @@ class AppTheme {
         outline: _dividerDark,
       ),
       textTheme: ThemeData.dark().textTheme.copyWith(
-        headlineMedium: const TextStyle(
-          color: _textPrimaryDark,
-          fontWeight: FontWeight.w700,
-          fontSize: 22,
-        ),
-        titleMedium: const TextStyle(
-          color: _textPrimaryDark,
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-        ),
-        bodyMedium: const TextStyle(
-          color: _textSecondaryDark,
-          fontSize: 14,
-        ),
-        labelLarge: const TextStyle(
-          color: _textPrimaryDark,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-      ),
+            headlineMedium: const TextStyle(
+              color: _textPrimaryDark,
+              fontWeight: FontWeight.w700,
+              fontSize: 22,
+            ),
+            titleMedium: const TextStyle(
+              color: _textPrimaryDark,
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+            bodyMedium: const TextStyle(
+              color: _textSecondaryDark,
+              fontSize: 14,
+            ),
+            labelLarge: const TextStyle(
+              color: _textPrimaryDark,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: _surfaceVariantDark,
@@ -81,7 +81,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: _errorDark),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: InputDecorationTheme(
@@ -141,26 +142,26 @@ class AppTheme {
         outline: _dividerLight,
       ),
       textTheme: ThemeData.light().textTheme.copyWith(
-        headlineMedium: const TextStyle(
-          color: _textPrimaryLight,
-          fontWeight: FontWeight.w700,
-          fontSize: 22,
-        ),
-        titleMedium: const TextStyle(
-          color: _textPrimaryLight,
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-        ),
-        bodyMedium: const TextStyle(
-          color: _textSecondaryLight,
-          fontSize: 14,
-        ),
-        labelLarge: const TextStyle(
-          color: _textPrimaryLight,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-      ),
+            headlineMedium: const TextStyle(
+              color: _textPrimaryLight,
+              fontWeight: FontWeight.w700,
+              fontSize: 22,
+            ),
+            titleMedium: const TextStyle(
+              color: _textPrimaryLight,
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+            bodyMedium: const TextStyle(
+              color: _textSecondaryLight,
+              fontSize: 14,
+            ),
+            labelLarge: const TextStyle(
+              color: _textPrimaryLight,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: _surfaceVariantLight,
@@ -181,7 +182,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: _errorLight),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: InputDecorationTheme(

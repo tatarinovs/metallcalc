@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/prefs.dart';
+import '../services/calculator.dart';
 import '../models/material_data.dart';
 import '../widgets/profile_selector.dart';
 import '../widgets/material_selector.dart';
@@ -17,7 +18,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   ProfileType _profile = ProfileType.sheet;
   Grade? _grade;
   // [a, b, c, d, e] — 5 измерений; неиспользуемые = 0
-  List<double> _dims = [0, 0, 0, 0, 0];
+  final ValueNotifier<List<double>> _dims =
+      ValueNotifier<List<double>>(List<double>.filled(5, 0));
 
   @override
   void initState() {
@@ -32,34 +34,34 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         (e) => e.name == profileName,
         orElse: () => ProfileType.sheet,
       );
-      setState(() {
-        _profile = savedProfile;
-      });
+      _profile = savedProfile;
     }
   }
 
-  double? get _volume =>
-      _profile.calcVolume(_dims[0], _dims[1], _dims[2], _dims[3], _dims[4]);
+  double? _volumeFor(List<double> dimensions) => _profile.calcVolume(
+        dimensions[0],
+        dimensions[1],
+        dimensions[2],
+        dimensions[3],
+        dimensions[4],
+      );
 
-  double? get _linearMass {
-    if (_grade == null) return null;
-    final probe = [..._dims];
-    probe[_profile.lengthParamIndex] = 1000.0;
-    
-    final vol1m = _profile.calcVolume(
-      probe[0], probe[1], probe[2], probe[3], probe[4]
+  double? _linearMassFor(List<double> dimensions) {
+    final grade = _grade;
+    if (grade == null) return null;
+    return calculateLinearMassKg(
+      profile: _profile,
+      dimensions: dimensions,
+      densityGcm3: grade.density,
     );
-    
-    if (vol1m == null) return null;
-    return (vol1m / 1000.0) * _grade!.density / 1000.0;
   }
 
   void _onProfileChanged(ProfileType p) {
     if (_profile == p) return;
     setState(() {
       _profile = p;
-      _dims = [0, 0, 0, 0, 0];
     });
+    _dims.value = List<double>.filled(5, 0);
     prefs.setString('selectedProfile', p.name);
   }
 
@@ -68,14 +70,22 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   void _onDimsChanged(List<double> d) {
-    setState(() {
-      _dims = List.generate(5, (i) => i < d.length ? d[i] : 0.0);
-    });
+    _dims.value = List<double>.generate(
+      5,
+      (index) => index < d.length ? d[index] : 0.0,
+    );
+  }
+
+  @override
+  void dispose() {
+    _dims.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 700;
+    final size = MediaQuery.sizeOf(context);
+    final isWide = size.width > 700 && size.height >= 520;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -116,11 +126,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           _Section(
             label: 'Результат',
             withCard: false,
-            child: ResultDisplay(
-              volumeMm3: _volume,
-              densityGcm3: _grade?.density,
-              linearMassKg: _linearMass,
-            ),
+            child: _buildResultDisplay(),
           ),
           const SizedBox(height: 16),
         ],
@@ -170,7 +176,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         ),
         Expanded(
           flex: 4,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,24 +184,30 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 _Section(
                   label: 'Результат',
                   withCard: false,
-                  child: ResultDisplay(
-                    volumeMm3: _volume,
-                    densityGcm3: _grade?.density,
-                    linearMassKg: _linearMass,
-                  ),
+                  child: _buildResultDisplay(),
                 ),
                 const SizedBox(height: 20),
                 _Section(
                   label: 'Формула',
                   withCard: false,
-                  child: _FormulaHint(
-                      profile: _profile, grade: _grade, dims: _dims),
+                  child: _FormulaHint(profile: _profile, grade: _grade),
                 ),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildResultDisplay() {
+    return ValueListenableBuilder<List<double>>(
+      valueListenable: _dims,
+      builder: (context, dimensions, _) => ResultDisplay(
+        volumeMm3: _volumeFor(dimensions),
+        densityGcm3: _grade?.density,
+        linearMassKg: _linearMassFor(dimensions),
+      ),
     );
   }
 }
@@ -248,12 +260,10 @@ class _Section extends StatelessWidget {
 class _FormulaHint extends StatelessWidget {
   final ProfileType profile;
   final Grade? grade;
-  final List<double> dims;
 
   const _FormulaHint({
     required this.profile,
     required this.grade,
-    required this.dims,
   });
 
   @override
@@ -288,7 +298,7 @@ class _FormulaHint extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            _getFormula(),
+            profile.formula,
             style: TextStyle(
               color: colorScheme.onSurface,
               fontSize: 13,
@@ -310,34 +320,5 @@ class _FormulaHint extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getFormula() {
-    switch (profile) {
-      case ProfileType.sheet:
-        return 'V = A × B × L\nm = V × ρ / 10⁶';
-      case ProfileType.circle:
-        return 'V = π × D² / 4 × L\nm = V × ρ / 10⁶';
-      case ProfileType.square:
-        return 'V = A² × L\nm = V × ρ / 10⁶';
-      case ProfileType.hex:
-        return 'V = (√3/2) × S² × L\nm = V × ρ / 10⁶';
-      case ProfileType.pipe:
-        return 'V = π/4 × (D² − d²) × L\nd = D − 2t\nm = V × ρ / 10⁶';
-      case ProfileType.pipeSquare:
-        return 'V = (A² − a²) × L\na = A − 2t\nm = V × ρ / 10⁶';
-      case ProfileType.pipeRect:
-        return 'V = (A×B − a×b) × L\na = A−2t,  b = B−2t\nm = V × ρ / 10⁶';
-      case ProfileType.angle:
-        return 'V = (2A·t − t²) × L\nm = V × ρ / 10⁶';
-      case ProfileType.angleUnequal:
-        return 'V = (A + B − t) × t × L\nm = V × ρ / 10⁶';
-      case ProfileType.channel:
-        return 'V = [s·(H−2t) + 2·B·t] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
-      case ProfileType.ibeam:
-        return 'V = [s·(H−2t) + 2·B·t] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
-      case ProfileType.tbeam:
-        return 'V = [B·t + s·(H−t)] × L\ns — стенка,  t — полка\nm = V × ρ / 10⁶';
-    }
   }
 }

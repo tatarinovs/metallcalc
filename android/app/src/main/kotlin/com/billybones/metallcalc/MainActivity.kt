@@ -1,4 +1,4 @@
-package com.example.metallcalc
+package com.billybones.metallcalc
 
 import io.flutter.embedding.android.FlutterActivity
 

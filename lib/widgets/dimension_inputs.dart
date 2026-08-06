@@ -158,26 +158,30 @@ class _DimensionInputsState extends State<DimensionInputs> {
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          onChanged: (_) => _notify(),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            _DecimalTextInputFormatter(),
-            _MaxLengthFormatter(10),
-          ],
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-          decoration: InputDecoration(
-            suffixText: 'мм',
-            suffixStyle: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontSize: 12,
+        Semantics(
+          label: label,
+          textField: true,
+          child: TextField(
+            controller: controller,
+            onChanged: (_) => _notify(),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              _DecimalTextInputFormatter(),
+              _MaxLengthFormatter(10),
+            ],
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
-            hintText: '0',
+            decoration: InputDecoration(
+              suffixText: 'мм',
+              suffixStyle: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
+              hintText: '0',
+            ),
           ),
         ),
       ],

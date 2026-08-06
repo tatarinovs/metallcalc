@@ -1,11 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val signingPropertiesFile = rootProject.file("key.properties")
+val signingProperties = Properties()
+val hasReleaseSigning = signingPropertiesFile.isFile
+
+if (hasReleaseSigning) {
+    signingPropertiesFile.inputStream().use(signingProperties::load)
+}
+
+fun requiredSigningProperty(name: String): String =
+    signingProperties.getProperty(name)?.takeIf { it.isNotBlank() }
+        ?: throw GradleException("Missing '$name' in ${signingPropertiesFile.path}")
+
 android {
-    namespace = "com.example.metallcalc"
+    namespace = "com.billybones.metallcalc"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +29,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.metallcalc"
+        applicationId = "com.billybones.metallcalc"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -25,11 +38,25 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                keyAlias = requiredSigningProperty("keyAlias")
+                keyPassword = requiredSigningProperty("keyPassword")
+                storeFile = rootProject.file(requiredSigningProperty("storeFile"))
+                storePassword = requiredSigningProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                // Suitable for local distribution. Configure key.properties before publishing.
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 }

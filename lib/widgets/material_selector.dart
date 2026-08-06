@@ -26,11 +26,16 @@ class _MaterialSelectorState extends State<MaterialSelector> {
     final lastGroup = prefs.getString('last_group');
     if (lastGroup != null) {
       try {
-        _selectedGroup = materialsDb.firstWhere((g) => g.name == lastGroup);
-        final lastGrade = prefs.getString('last_grade_${_selectedGroup!.name}');
+        _selectedGroup = materialsDb.firstWhere(
+          (group) => group.id == lastGroup || group.name == lastGroup,
+        );
+        prefs.setString('last_group', _selectedGroup!.id);
+        final lastGrade = prefs.getString('last_grade_${_selectedGroup!.id}') ??
+            prefs.getString('last_grade_${_selectedGroup!.name}');
         if (lastGrade != null) {
           try {
-            _selectedGrade = _selectedGroup!.grades.firstWhere((g) => g.name == lastGrade);
+            _selectedGrade =
+                _selectedGroup!.grades.firstWhere((g) => g.name == lastGrade);
           } catch (_) {}
         }
         if (_selectedGrade == null && _selectedGroup!.grades.isNotEmpty) {
@@ -42,16 +47,19 @@ class _MaterialSelectorState extends State<MaterialSelector> {
     }
 
     if (_selectedGrade != null) {
-      Future.microtask(() => widget.onGradeChanged(_selectedGrade));
+      Future.microtask(() {
+        if (mounted) widget.onGradeChanged(_selectedGrade);
+      });
     }
   }
 
   void _onGroupChanged(MaterialGroup? group) {
     if (group == null) return;
-    prefs.setString('last_group', group.name);
+    prefs.setString('last_group', group.id);
 
     Grade? prevGrade;
-    final lastGrade = prefs.getString('last_grade_${group.name}');
+    final lastGrade = prefs.getString('last_grade_${group.id}') ??
+        prefs.getString('last_grade_${group.name}');
     if (lastGrade != null) {
       try {
         prevGrade = group.grades.firstWhere((g) => g.name == lastGrade);
@@ -60,7 +68,7 @@ class _MaterialSelectorState extends State<MaterialSelector> {
 
     if (prevGrade == null && group.grades.isNotEmpty) {
       prevGrade = group.grades.first;
-      prefs.setString('last_grade_${group.name}', prevGrade.name);
+      prefs.setString('last_grade_${group.id}', prevGrade.name);
     }
 
     setState(() {
@@ -72,7 +80,7 @@ class _MaterialSelectorState extends State<MaterialSelector> {
 
   void _onGradeChanged(Grade? grade) {
     if (grade != null && _selectedGroup != null) {
-      prefs.setString('last_grade_${_selectedGroup!.name}', grade.name);
+      prefs.setString('last_grade_${_selectedGroup!.id}', grade.name);
     }
     setState(() {
       _selectedGrade = grade;
@@ -102,7 +110,9 @@ class _MaterialSelectorState extends State<MaterialSelector> {
           items: _selectedGroup?.grades ?? [],
           displayText: (g) => '${g.name}  (${g.density} г/см³)',
           onChanged: _onGradeChanged,
-          hint: _selectedGroup == null ? 'Сначала выберите материал' : 'Выберите марку',
+          hint: _selectedGroup == null
+              ? 'Сначала выберите материал'
+              : 'Выберите марку',
           enabled: _selectedGroup != null,
         ),
       ],
@@ -145,61 +155,70 @@ class _StyledDropdown<T> extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: enabled ? colorScheme.surfaceContainer : colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: enabled ? colorScheme.outline : colorScheme.outline.withValues(alpha: 0.4),
+        Semantics(
+          label: label,
+          child: Container(
+            decoration: BoxDecoration(
+              color:
+                  enabled ? colorScheme.surfaceContainer : colorScheme.surface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: enabled
+                    ? colorScheme.outline
+                    : colorScheme.outline.withValues(alpha: 0.4),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<T>(
-              value: value,
-              isExpanded: true,
-              dropdownColor: colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              hint: Text(
-                hint,
-                style: TextStyle(
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: enabled ? 1.0 : 0.5),
-                  fontSize: 14,
-                ),
-              ),
-              icon: Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: enabled ? colorScheme.onSurfaceVariant : colorScheme.outline,
-              ),
-              items: enabled
-                  ? items.map((item) {
-                      return DropdownMenuItem<T>(
-                        value: item,
-                        child: Text(
-                          displayText(item),
-                          style: TextStyle(
-                            color: colorScheme.onSurface,
-                            fontSize: 14,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList()
-                  : [],
-              onChanged: enabled ? onChanged : null,
-              selectedItemBuilder: (context) => items.map((item) {
-                return Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    displayText(item),
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<T>(
+                value: value,
+                isExpanded: true,
+                dropdownColor: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                hint: Text(
+                  hint,
+                  style: TextStyle(
+                    color: colorScheme.onSurfaceVariant
+                        .withValues(alpha: enabled ? 1.0 : 0.5),
+                    fontSize: 14,
                   ),
-                );
-              }).toList(),
+                ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: enabled
+                      ? colorScheme.onSurfaceVariant
+                      : colorScheme.outline,
+                ),
+                items: enabled
+                    ? items.map((item) {
+                        return DropdownMenuItem<T>(
+                          value: item,
+                          child: Text(
+                            displayText(item),
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList()
+                    : [],
+                onChanged: enabled ? onChanged : null,
+                selectedItemBuilder: (context) => items.map((item) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      displayText(item),
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ),

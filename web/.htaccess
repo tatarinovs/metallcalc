@@ -1,0 +1,34 @@
+<IfModule mod_mime.c>
+  AddType application/wasm .wasm
+  AddType text/javascript .mjs
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/plain text/xml
+  AddOutputFilterByType BROTLI_COMPRESS text/javascript application/javascript application/json
+  AddOutputFilterByType BROTLI_COMPRESS application/wasm image/svg+xml font/ttf font/otf
+</IfModule>
+
+<IfModule !mod_brotli.c>
+  <IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+    AddOutputFilterByType DEFLATE text/javascript application/javascript application/json
+    AddOutputFilterByType DEFLATE application/wasm image/svg+xml font/ttf font/otf
+  </IfModule>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/wasm "access plus 1 day"
+  ExpiresByType text/javascript "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType font/ttf "access plus 30 days"
+  ExpiresByType font/otf "access plus 30 days"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|flutter_bootstrap\.js|manifest\.json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

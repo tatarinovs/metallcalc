@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/calculator.dart';
+
 String _formatValue(double val, int decimals) {
   String s = val.toStringAsFixed(decimals);
   if (s.contains('.')) {
@@ -13,7 +15,7 @@ String _formatValue(double val, int decimals) {
 }
 
 class ResultDisplay extends StatelessWidget {
-  final double? volumeMm3;   // объём в мм³
+  final double? volumeMm3; // объём в мм³
   final double? densityGcm3; // плотность г/см³
   final double? linearMassKg; // масса 1 п.м.
 
@@ -36,8 +38,6 @@ class ResultDisplay extends StatelessWidget {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final hasResult = volumeMm3 != null && densityGcm3 != null;
@@ -45,8 +45,11 @@ class ResultDisplay extends StatelessWidget {
     double? volumeCm3;
 
     if (hasResult) {
-      volumeCm3 = volumeMm3! / 1000.0;          // мм³ → см³
-      massKg = volumeCm3 * densityGcm3! / 1000; // г → кг
+      volumeCm3 = volumeMm3! / 1000.0; // мм³ → см³
+      massKg = calculateMassKg(
+        volumeMm3: volumeMm3!,
+        densityGcm3: densityGcm3!,
+      );
     }
 
     return AnimatedSwitcher(
@@ -63,7 +66,8 @@ class ResultDisplay extends StatelessWidget {
       ),
       child: hasResult
           ? _ResultCard(
-              key: ValueKey('${volumeCm3?.toStringAsFixed(4)}_${massKg?.toStringAsFixed(6)}'),
+              key: ValueKey(
+                  '${volumeCm3?.toStringAsFixed(4)}_${massKg?.toStringAsFixed(6)}'),
               volumeCm3: volumeCm3!,
               massKg: massKg!,
               linearMassKg: linearMassKg,
@@ -108,7 +112,8 @@ class _ResultCard extends StatelessWidget {
               : [colorScheme.surface, colorScheme.surfaceContainer],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.4), width: 1.5),
+        border: Border.all(
+            color: colorScheme.primary.withValues(alpha: 0.4), width: 1.5),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -118,7 +123,7 @@ class _ResultCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Результат',
+                'Теоретическая масса',
                 style: TextStyle(
                   color: colorScheme.onSurfaceVariant,
                   fontSize: 12,
@@ -126,42 +131,46 @@ class _ResultCard extends StatelessWidget {
                   letterSpacing: 0.8,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
+              TextButton.icon(
+                onPressed: () {
                   Clipboard.setData(ClipboardData(text: massStr));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
                         'Скопировано: $massStr',
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 14),
                         textAlign: TextAlign.center,
                       ),
                       duration: const Duration(seconds: 2),
                       backgroundColor: colorScheme.secondary,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      margin: const EdgeInsets.only(bottom: 20, left: 60, right: 60),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: const EdgeInsets.only(
+                          bottom: 20, left: 60, right: 60),
                     ),
                   );
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.12),
+                icon: Icon(
+                  Icons.copy_rounded,
+                  size: 14,
+                  color: colorScheme.primary,
+                ),
+                label: const Text('Копировать'),
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  textStyle: const TextStyle(fontSize: 11),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  minimumSize: const Size(44, 36),
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.3)),
+                    side: BorderSide(
+                      color: colorScheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.copy_rounded, size: 12, color: colorScheme.primary),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Копировать',
-                        style: TextStyle(color: colorScheme.primary, fontSize: 11),
-                      ),
-                    ],
-                  ),
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
                 ),
               ),
             ],
@@ -194,7 +203,9 @@ class _ResultCard extends StatelessWidget {
               const SizedBox(width: 12),
               _MetricChip(
                 label: 'Вес 1 п.м.',
-                value: linearMassKg != null ? '${_formatValue(linearMassKg!, 3)} кг' : '---',
+                value: linearMassKg != null
+                    ? '${_formatValue(linearMassKg!, 3)} кг'
+                    : '---',
                 icon: Icons.straighten_outlined,
               ),
             ],

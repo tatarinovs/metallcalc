@@ -3,6 +3,9 @@
 #include <windows.h>
 #include <shlobj.h>
 
+#include <optional>
+#include <limits>
+
 #include "flutter_window.h"
 #include "utils.h"
 
@@ -26,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   for (const auto& arg : command_line_arguments) {
     if (arg == "-u") {
       // Clean up registry
-      RegDeleteKey(HKEY_CURRENT_USER, L"Software\\MetallCalc");
+      RegDeleteTree(HKEY_CURRENT_USER, L"Software\\MetallCalc");
 
       // Clean up shared_preferences data
       wchar_t appData[MAX_PATH];
@@ -49,28 +52,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(900, 650);
+  std::optional<RECT> saved_window_bounds;
 
   HKEY hKey;
   if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\MetallCalc", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-    DWORD x, y, width, height;
+    LONG x, y;
+    DWORD width, height;
     DWORD type = REG_DWORD;
     DWORD cbData = sizeof(DWORD);
     if (RegQueryValueEx(hKey, L"WindowLeft", nullptr, &type, reinterpret_cast<LPBYTE>(&x), &cbData) == ERROR_SUCCESS &&
         (cbData = sizeof(DWORD), RegQueryValueEx(hKey, L"WindowTop", nullptr, &type, reinterpret_cast<LPBYTE>(&y), &cbData) == ERROR_SUCCESS) &&
         (cbData = sizeof(DWORD), RegQueryValueEx(hKey, L"WindowWidth", nullptr, &type, reinterpret_cast<LPBYTE>(&width), &cbData) == ERROR_SUCCESS) &&
         (cbData = sizeof(DWORD), RegQueryValueEx(hKey, L"WindowHeight", nullptr, &type, reinterpret_cast<LPBYTE>(&height), &cbData) == ERROR_SUCCESS)) {
-      // Validate: ensure the window is on a visible monitor
-      RECT r = {static_cast<LONG>(x), static_cast<LONG>(y),
-                static_cast<LONG>(x + width), static_cast<LONG>(y + height)};
-      if (MonitorFromRect(&r, MONITOR_DEFAULTTONULL) != nullptr) {
-        origin = Win32Window::Point(x, y);
-        size = Win32Window::Size(width, height);
+      // Window placement uses native workspace coordinates. Do not apply DPI
+      // scaling here: SetWindowPlacement handles per-monitor placement.
+      if (width >= 200 && width <= 10000 && height >= 150 &&
+          height <= 10000) {
+        const auto right = static_cast<long long>(x) + width;
+        const auto bottom = static_cast<long long>(y) + height;
+        if (right <= std::numeric_limits<LONG>::max() &&
+            right >= std::numeric_limits<LONG>::min() &&
+            bottom <= std::numeric_limits<LONG>::max() &&
+            bottom >= std::numeric_limits<LONG>::min()) {
+          RECT r = {x, y, static_cast<LONG>(right),
+                    static_cast<LONG>(bottom)};
+          if (MonitorFromRect(&r, MONITOR_DEFAULTTONULL) != nullptr) {
+            saved_window_bounds = r;
+          }
+        }
       }
     }
     RegCloseKey(hKey);
   }
   if (!window.Create(L"\u041C\u0435\u0442\u0430\u043B\u043B\u043E\u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440", origin, size)) {
     return EXIT_FAILURE;
+  }
+  if (saved_window_bounds.has_value()) {
+    WINDOWPLACEMENT placement{};
+    placement.length = sizeof(WINDOWPLACEMENT);
+    if (GetWindowPlacement(window.GetHandle(), &placement)) {
+      placement.showCmd = SW_SHOWNORMAL;
+      placement.rcNormalPosition = saved_window_bounds.value();
+      SetWindowPlacement(window.GetHandle(), &placement);
+    }
   }
   window.SetQuitOnClose(true);
 

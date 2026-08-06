@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'theme/app_theme.dart';
 import 'screens/calculator_screen.dart';
 
@@ -20,7 +21,7 @@ class MetallCalcApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: kIsWeb ? ThemeMode.light : ThemeMode.system,
       home: const CalculatorScreen(),
     );
   }
