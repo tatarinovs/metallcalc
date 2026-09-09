@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "metall-calc",
-  "version": "0.1.0",
+  "productName": "metallcalc",
+  "version": "1.0.0",
   "identifier": "com.serg.metallcalc",
   "build": {
     "frontendDist": "../dist",
@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "Металлокалькулятор",
-        "width": 800,
-        "height": 430,
+        "width": 700,
+        "height": 500,
         "minWidth": 380,
         "minHeight": 380,
         "resizable": true,
@@ -23,7 +23,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
     }
   },
   "bundle": {

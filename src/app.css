@@ -10,8 +10,27 @@
   --text-secondary: #607d8b;
   --divider: #cfd8dc;
   --error: #d32f2f;
+  --success: #2e7d32;
+  --success-surface: color-mix(in srgb, var(--success) 14%, transparent);
   --result-grad-start: #ffffff;
   --result-grad-end: #e9ecef;
+
+  /* --- Скругления (Radii) --- */
+  --radius-card: 16px;
+  --radius-md: 12px;
+  --radius-input: 10px;
+  --radius-item: 8px;
+  --radius-sm: 6px;
+
+  /* --- Интерактивные состояния --- */
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  --item-hover: color-mix(in srgb, var(--accent) 8%, var(--surface-variant));
+  --item-selected: color-mix(in srgb, var(--accent) 15%, transparent);
+
+  /* --- Тени (Светлая тема) --- */
+  --shadow-dropdown: 0 12px 28px -4px rgba(0, 0, 0, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-toast: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,8 +46,15 @@
     --text-secondary: #90a4ae;
     --divider: #2e3347;
     --error: #ef5350;
+    --success: #66bb6a;
+    --success-surface: color-mix(in srgb, var(--success) 18%, transparent);
     --result-grad-start: #0d2137;
     --result-grad-end: #0a1628;
+
+    /* --- Тени (Тёмная тема) --- */
+    --shadow-dropdown: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 6px 16px -2px rgba(0, 0, 0, 0.3);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --shadow-toast: 0 6px 20px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -47,6 +73,19 @@ body {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+pre,
+.selectable,
+.mass,
+.chip-value,
+.formula-density {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* Скрытие скроллбара в WebKit (Chrome, Safari, Android WebView) */

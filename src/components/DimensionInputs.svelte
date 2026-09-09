@@ -150,7 +150,7 @@
     box-sizing: border-box;
     background: var(--surface-variant);
     border: 1px solid var(--divider);
-    border-radius: 10px;
+    border-radius: var(--radius-input);
     padding: 12px 32px 12px 14px;
     font-size: 14px;
     font-weight: 500;
@@ -162,7 +162,7 @@
     outline: none;
     border-color: var(--accent);
     border-width: 1px;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    box-shadow: var(--focus-ring);
   }
   .suffix {
     position: absolute;

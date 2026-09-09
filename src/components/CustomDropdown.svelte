@@ -1,8 +1,14 @@
+<script context="module">
+  import { writable } from 'svelte/store';
+  export const activeDropdownId = writable(null);
+</script>
+
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { fly, fade } from 'svelte/transition';
+  import { createEventDispatcher, onDestroy } from 'svelte';
+  import { fly } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
 
+  export let id = null;
   export let label = '';
   export let value = null; // Текущее выбранное значение (id или объект)
   export let options = []; // [{ value, label, sublabel }]
@@ -10,13 +16,26 @@
   export let disabled = false;
 
   const dispatch = createEventDispatcher();
-  let isOpen = false;
+  const internalId = Symbol();
+  $: dropdownId = id || internalId;
+  $: isOpen = $activeDropdownId === dropdownId;
+
   let containerEl;
   let triggerEl;
   let menuListEl;
   let menuStyle = '';
 
   $: selectedOption = options.find((o) => o.value === value) ?? null;
+
+  $: if (disabled && isOpen) {
+    close();
+  }
+
+  onDestroy(() => {
+    if ($activeDropdownId === dropdownId) {
+      activeDropdownId.set(null);
+    }
+  });
 
   function getSafeAreaInsets() {
     if (typeof window === 'undefined') return { top: 0, bottom: 0 };
@@ -89,25 +108,38 @@
     }, 10);
   }
 
+  function open() {
+    if (disabled) return;
+    activeDropdownId.set(dropdownId);
+    const selIdx = options.findIndex((o) => o.value === value);
+    focusedIndex = selIdx >= 0 ? selIdx : 0;
+    updateMenuPosition();
+    scrollToFocused();
+  }
+
+  function close() {
+    if ($activeDropdownId === dropdownId) {
+      activeDropdownId.set(null);
+    }
+  }
+
   function toggle() {
     if (disabled) return;
-    isOpen = !isOpen;
-    if (isOpen) {
-      const selIdx = options.findIndex((o) => o.value === value);
-      focusedIndex = selIdx >= 0 ? selIdx : 0;
-      updateMenuPosition();
-      scrollToFocused();
+    if ($activeDropdownId === dropdownId) {
+      close();
+    } else {
+      open();
     }
   }
 
   function select(opt) {
-    isOpen = false;
+    close();
     dispatch('select', opt.value);
   }
 
   function onWindowClick(e) {
     if (isOpen && containerEl && !containerEl.contains(e.target)) {
-      isOpen = false;
+      close();
     }
   }
 
@@ -115,7 +147,7 @@
     if (!isOpen) return;
 
     if (e.key === 'Escape' || e.key === 'Tab') {
-      isOpen = false;
+      close();
       return;
     }
 
@@ -155,7 +187,7 @@
     type="button"
     class="trigger"
     class:open={isOpen}
-    on:click|stopPropagation={toggle}
+    on:click={toggle}
     bind:this={triggerEl}
     {disabled}
   >
@@ -235,7 +267,7 @@
     box-sizing: border-box;
     background: var(--surface-variant);
     border: 1px solid var(--divider);
-    border-radius: 10px;
+    border-radius: var(--radius-input);
     padding: 12px 14px;
     font-size: 14px;
     font-family: inherit;
@@ -251,7 +283,7 @@
 
   .trigger.open {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    box-shadow: var(--focus-ring);
   }
 
   .trigger:disabled {
@@ -301,8 +333,8 @@
     z-index: 1000;
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-radius: 12px;
-    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 6px 16px -2px rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-dropdown);
     overflow: hidden;
     backdrop-filter: blur(12px);
     display: flex;
@@ -341,7 +373,7 @@
     padding: 10px 12px;
     background: transparent;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-item);
     font-size: 14px;
     font-family: inherit;
     color: var(--text-primary);
@@ -355,7 +387,7 @@
   }
 
   .menu-item.active {
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: var(--item-selected);
     color: var(--accent);
     font-weight: 600;
   }

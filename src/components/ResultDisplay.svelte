@@ -142,11 +142,11 @@
     position: relative;
   }
   .result-card {
-    border-radius: 16px;
+    border-radius: var(--radius-card);
     border: 1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
     padding: 16px;
     background: linear-gradient(135deg, var(--result-grad-start), var(--result-grad-end));
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-card);
   }
   .result-header {
     display: flex;
@@ -168,7 +168,7 @@
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     padding: 6px 10px;
     cursor: pointer;
     font-family: inherit;
@@ -182,9 +182,9 @@
     transform: scale(0.95);
   }
   .copy-btn.copied {
-    background: color-mix(in srgb, #4caf50 18%, transparent);
-    border-color: #4caf50;
-    color: #4caf50;
+    background: var(--success-surface);
+    border-color: var(--success);
+    color: var(--success);
   }
   .mass {
     margin-top: 10px;
@@ -194,6 +194,9 @@
     line-height: 1.1;
     color: var(--accent);
     transition: color 0.2s ease;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
   }
   .divider {
     margin: 10px 0;
@@ -212,7 +215,7 @@
     padding: 10px 12px;
     background: var(--surface-variant);
     border: 1px solid var(--divider);
-    border-radius: 10px;
+    border-radius: var(--radius-input);
     min-width: 0;
     transition: background 0.15s ease;
   }
@@ -237,6 +240,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
   }
   .empty-card {
     height: 90px;
@@ -247,7 +253,7 @@
     gap: 8px;
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-radius: 16px;
+    border-radius: var(--radius-card);
     color: var(--text-secondary);
   }
   .empty-card p {
@@ -266,10 +272,10 @@
     color: #fff;
     text-align: center;
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     font-size: 14px;
     font-weight: 500;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--shadow-toast);
     z-index: 100;
     pointer-events: none;
     white-space: nowrap;

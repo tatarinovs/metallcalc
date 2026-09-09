@@ -10,7 +10,7 @@
 
 Для удобства добавлены готовые Windows bat-скрипты, которые автоматически складывают готовые файлы в папку **`dist/`**:
 
-- **`build-exe.bat`** — сборка нативного Windows `.exe` и установщика NSIS (Release, без UPX) $\rightarrow$ копируются в `dist\metall-calc.exe` и `dist\metall-calc-setup.exe`.
+- **`build-exe.bat`** — сборка нативного Windows `.exe` и установщика NSIS (Release, без UPX) $\rightarrow$ копируются в `releases\metallcalc.exe` и `releases\metallcalc-setup.exe`.
 - **`build-apk.bat`** — сборка релизного подписанного APK для **arm64-v8a** $\rightarrow$ копируется в `dist\metallcalc-arm64-release.apk`.
 
 ### Размеры бинарников (сравнение с Flutter)
@@ -47,7 +47,7 @@ npm run preview   # локальный предпросмотр прод-сбо�
 
 ## Структура проекта
 
-- `dist/` — готовые бинарники (`metall-calc.exe`, `metall-calc-setup.exe`, `metallcalc-arm64-release.apk`, веб-файлы)
+- `releases/` — готовые бинарники (`metallcalc.exe`, `metallcalc-setup.exe`, `metallcalc-arm64-release.apk`)
 - `src/lib/materialData.js` — типы профилей, формулы, `calcVolume()` (из `material_data.dart`)
 - `src/lib/calculator.js` — расчёт массы и массы 1 п.м. (из `calculator.dart`)
 - `src/lib/materialsDb.js` — база материалов и плотностей (из `materials_db.dart`)

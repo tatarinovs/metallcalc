@@ -16,19 +16,11 @@ pub fn run() {
 
     builder
         .invoke_handler(tauri::generate_handler![show_window])
-        .setup(|app| {
-            if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
-            }
-
+        .setup(|_app| {
             #[cfg(desktop)]
             {
                 use tauri::Manager;
-                let handle = app.handle().clone();
+                let handle = _app.handle().clone();
                 std::thread::spawn(move || {
                     std::thread::sleep(std::time::Duration::from_millis(1500));
                     if let Some(window) = handle.get_webview_window("main") {

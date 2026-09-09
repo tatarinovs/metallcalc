@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from "svelte";
-  import { ProfileType, calcVolume, getFormula } from "./lib/materialData.js";
+  import { ProfileType, ALL_PROFILE_TYPES, calcVolume, getFormula } from "./lib/materialData.js";
   import { calculateLinearMassKg } from "./lib/calculator.js";
   import { prefs } from "./lib/prefs.js";
 
@@ -15,7 +15,7 @@
 
   onMount(() => {
     const savedProfile = prefs.getString("selectedProfile");
-    if (savedProfile && Object.values(ProfileType).includes(savedProfile)) {
+    if (savedProfile && ALL_PROFILE_TYPES.includes(savedProfile)) {
       profile = savedProfile;
     }
 
@@ -89,7 +89,7 @@
     }
   });
 
-  $: isWide = (containerWidth || 0) >= 720;
+  $: isWide = (containerWidth || 0) >= 680;
 </script>
 
 <div class="app" bind:this={appElement} bind:clientWidth={containerWidth}>
@@ -229,7 +229,7 @@
   }
   .col {
     flex: 5;
-    padding: 20px;
+    padding: 16px;
     min-width: 0;
   }
   .col-right {
@@ -238,7 +238,7 @@
   .vdivider {
     width: 1px;
     background: var(--divider);
-    margin: 20px 0;
+    margin: 16px 0;
     align-self: stretch;
   }
 
@@ -252,14 +252,14 @@
     padding: 12px;
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-radius: 16px;
+    border-radius: var(--radius-card);
   }
 
   .formula-hint {
     padding: 14px;
     background: var(--surface-container);
     border: 1px solid var(--divider);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
   .formula-title {
     display: flex;
@@ -277,18 +277,24 @@
     line-height: 1.5;
     color: var(--text-primary);
     white-space: pre-wrap;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
   }
   .formula-density {
     margin-top: 6px;
     font-size: 12px;
     font-weight: 500;
     color: var(--accent);
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
   }
 
   .formula-details {
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow: hidden;
   }
   .formula-summary {

@@ -37,6 +37,7 @@ releases/
 *.apk
 *.aab
 *.msi
+*.zip
 
 # --- IDE & OS ---
 .idea/

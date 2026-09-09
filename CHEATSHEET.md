@@ -9,7 +9,7 @@
 
 | Скрипт | Назначение | Результат в `releases/` |
 |---|---|---|
-| `build-exe.bat` | Собрать Windows `.exe` и установщик NSIS | `releases\metall-calc.exe` (~2.7 МБ)<br>`releases\metall-calc-setup.exe` (~1.0 МБ) |
+| `build-exe.bat` | Собрать Windows `.exe` и установщик NSIS | `releases\metallcalc.exe` (~2.7 МБ)<br>`releases\metallcalc-setup.exe` (~1.0 МБ) |
 | `build-apk.bat` | Собрать подписанный релизный `.apk` (arm64-v8a) | `releases\metallcalc-arm64-release.apk` (~5.7 МБ) |
 
 ---

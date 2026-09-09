@@ -57,18 +57,21 @@ echo.
 echo [3/3] Copying binaries to releases\...
 if not exist "releases" mkdir "releases"
 
-if exist "src-tauri\target\release\app.exe" (
-    copy /y "src-tauri\target\release\app.exe" "releases\metall-calc.exe" >nul
-    echo   [OK] releases\metall-calc.exe
+if exist "src-tauri\target\release\metallcalc.exe" (
+    copy /y "src-tauri\target\release\metallcalc.exe" "releases\metallcalc.exe" >nul
+    echo   [OK] releases\metallcalc.exe
+) else if exist "src-tauri\target\release\app.exe" (
+    copy /y "src-tauri\target\release\app.exe" "releases\metallcalc.exe" >nul
+    echo   [OK] releases\metallcalc.exe
 ) else if exist "src-tauri\target\release\metall-calc.exe" (
-    copy /y "src-tauri\target\release\metall-calc.exe" "releases\metall-calc.exe" >nul
-    echo   [OK] releases\metall-calc.exe
+    copy /y "src-tauri\target\release\metall-calc.exe" "releases\metallcalc.exe" >nul
+    echo   [OK] releases\metallcalc.exe
 )
 
 if exist "src-tauri\target\release\bundle\nsis" (
     for %%F in (src-tauri\target\release\bundle\nsis\*setup.exe) do (
-        copy /y "%%F" "releases\metall-calc-setup.exe" >nul
-        echo   [OK] releases\metall-calc-setup.exe
+        copy /y "%%F" "releases\metallcalc-setup.exe" >nul
+        echo   [OK] releases\metallcalc-setup.exe
     )
 )
 

@@ -4,6 +4,7 @@
   import { cubicOut } from 'svelte/easing';
   import { ProfileType, getLabel } from '../lib/materialData.js';
   import ProfileIcon from './ProfileIcon.svelte';
+  import { activeDropdownId } from './CustomDropdown.svelte';
 
   export let selected;
 
@@ -22,12 +23,18 @@
 
   let openMenu = null; // 'bar' | 'pipe' | 'structural' | null
 
+  $: if ($activeDropdownId != null && openMenu != null) {
+    openMenu = null;
+  }
+
   function select(p) {
+    activeDropdownId.set(null);
     dispatch('change', p);
     openMenu = null;
   }
 
   function toggleMenu(name) {
+    activeDropdownId.set(null);
     openMenu = openMenu === name ? null : name;
   }
 
@@ -161,22 +168,23 @@
     gap: 5px;
     background: var(--surface-variant);
     border: 1px solid var(--divider);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     padding: 6px 4px;
     position: relative;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
     font: inherit;
     user-select: none;
+    min-width: 0;
   }
   .profile-btn:hover {
-    background: color-mix(in srgb, var(--accent) 8%, var(--surface-variant));
+    background: var(--item-hover);
   }
   .profile-btn:active {
     transform: scale(0.96);
   }
   .profile-btn.selected {
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: var(--item-selected);
     border-color: var(--accent);
     border-width: 1.5px;
   }
@@ -214,8 +222,8 @@
     min-width: 220px;
     background: var(--surface);
     border: 1px solid var(--divider);
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-dropdown);
     padding: 6px;
     z-index: 20;
     backdrop-filter: blur(10px);
@@ -234,7 +242,7 @@
     margin: 2px 0;
     background: transparent;
     border: 1.2px solid transparent;
-    border-radius: 10px;
+    border-radius: var(--radius-item);
     cursor: pointer;
     text-align: left;
     font: inherit;
@@ -253,7 +261,7 @@
     transition: color 0.15s ease;
   }
   .dropdown-item.selected {
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: var(--item-selected);
     border-color: var(--accent);
   }
   .dropdown-item.selected span {
