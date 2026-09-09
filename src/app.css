@@ -1,0 +1,62 @@
+:root {
+  /* --- Светлая тема (по умолчанию) --- */
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --surface-variant: #e9ecef;
+  --surface-container: #e9ecef;
+  --accent: #0288d1;
+  --accent-deep: #01579b;
+  --text-primary: #263238;
+  --text-secondary: #607d8b;
+  --divider: #cfd8dc;
+  --error: #d32f2f;
+  --result-grad-start: #ffffff;
+  --result-grad-end: #e9ecef;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --- Тёмная тема --- */
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-variant: #242736;
+    --surface-container: #242736;
+    --accent: #4fc3f7;
+    --accent-deep: #0288d1;
+    --text-primary: #eceff1;
+    --text-secondary: #90a4ae;
+    --divider: #2e3347;
+    --error: #ef5350;
+    --result-grad-start: #0d2137;
+    --result-grad-end: #0a1628;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Скрытие скроллбара в WebKit (Chrome, Safari, Android WebView) */
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+button {
+  cursor: pointer;
+}

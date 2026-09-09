@@ -1,0 +1,11 @@
+{
+  "identifier": "desktop-window-state",
+  "description": "desktop window state permissions",
+  "platforms": ["windows", "macOS", "linux"],
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "window-state:default"
+  ]
+}

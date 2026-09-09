@@ -1,0 +1,71 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a1d2b"/>
+      <stop offset="1" stop-color="#0a0c14"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="512" cy="420" r="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4fc3f7" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4fc3f7" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="beam" x1="512" y1="187" x2="512" y2="837" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#70d6ff"/>
+      <stop offset="0.18" stop-color="#38bdf8"/>
+      <stop offset="0.55" stop-color="#0288d1"/>
+      <stop offset="1" stop-color="#01579b"/>
+    </linearGradient>
+
+    <linearGradient id="beamTopFace" x1="272" y1="139" x2="800" y2="187" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0e608f"/>
+      <stop offset="1" stop-color="#094467"/>
+    </linearGradient>
+
+    <linearGradient id="beamSide" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#094366"/>
+      <stop offset="1" stop-color="#042337"/>
+    </linearGradient>
+
+    <linearGradient id="sheen" x1="272" y1="187" x2="752" y2="297" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.40"/>
+      <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#glow)"/>
+  <rect x="6" y="6" width="1012" height="1012" rx="218" fill="none" stroke="#4fc3f7" stroke-opacity="0.18" stroke-width="6"/>
+
+  <!-- pseudo-3D extrusion (side/depth faces), drawn first so front face overlaps -->
+  <g fill="url(#beamSide)">
+    <polygon points="272,187 320,139 800,139 752,187"/>
+    <polygon points="752,187 800,139 800,257 752,297 752,297"/>
+    <polygon points="752,297 800,257 800,297 752,297"/>
+    <polygon points="587,297 635,257 635,257 587,297"/>
+    <polygon points="752,727 800,679 800,789 752,837"/>
+    <polygon points="272,837 320,789 800,789 752,837"/>
+  </g>
+
+  <!-- front face: I-beam cross-section -->
+  <g filter="url(#softShadow)">
+    <polygon fill="url(#beam)" points="
+      272,187 752,187 752,297 587,297 587,727 752,727 752,837 272,837 272,727 437,727 437,297 272,297
+    "/>
+  </g>
+
+  <!-- polished highlight on top flange and web -->
+  <polygon fill="url(#sheen)" points="272,187 752,187 752,240 272,240"/>
+  <rect x="437" y="297" width="150" height="200" fill="url(#sheen)" opacity="0.4"/>
+
+  <!-- crisp outline for definition at small sizes -->
+  <polygon fill="none" stroke="#01324a" stroke-width="10" stroke-linejoin="round" points="
+    272,187 752,187 752,297 587,297 587,727 752,727 752,837 272,837 272,727 437,727 437,297 272,297
+  "/>
+</svg>

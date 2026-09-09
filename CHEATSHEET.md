@@ -1,0 +1,62 @@
+# Шпаргалка по командам — Металлокалькулятор
+
+Все команды выполняются из корня проекта (`d:\PROJECT\metallcalc-svelte\`).
+Все готовые бинарники копируются напрямую в папку **`releases/`** (папка `dist/` служит исключительно для фронтенда Vite).
+
+---
+
+## Сборка в один клик (.bat)
+
+| Скрипт | Назначение | Результат в `releases/` |
+|---|---|---|
+| `build-exe.bat` | Собрать Windows `.exe` и установщик NSIS | `releases\metall-calc.exe` (~2.7 МБ)<br>`releases\metall-calc-setup.exe` (~1.0 МБ) |
+| `build-apk.bat` | Собрать подписанный релизный `.apk` (arm64-v8a) | `releases\metallcalc-arm64-release.apk` (~5.7 МБ) |
+
+---
+
+## Тестирование
+
+| Команда | Что делает |
+|---|---|
+| `npm test` | Запуск Vitest: 19 тестов проверки геометрии, формул, массы и линейной плотности |
+
+---
+
+## Веб-версия и встраивание на сайт
+
+| Команда | Что делает |
+|---|---|
+| `npm run dev` | Dev-сервер с горячей перезагрузкой → `http://localhost:5173` |
+| `npm run build` | Сборка статики в `dist/` (`assets/index.js` и `assets/index.css`) |
+| `npm run preview` | Локальный предпросмотр продакшен-сборки `dist/` |
+
+Для встраивания на сайт (например, в CMS или статическую страницу):
+1. Скопировать `dist/assets/index.js` и `dist/assets/index.css` на сервер.
+2. Подключить в HTML:
+   ```html
+   <link rel="stylesheet" href="assets/index.css">
+   <div id="app"></div>
+   <script type="module" src="assets/index.js"></script>
+   ```
+
+---
+
+## Десктоп (.exe) — Tauri
+
+| Команда | Что делает |
+|---|---|
+| `npm run tauri dev` | Окно приложения в режиме разработки с горячей перезагрузкой |
+| `npm run tauri build` | Финальная сборка установщика и `.exe` |
+
+---
+
+## Android (.apk) — Tauri Mobile
+
+| Команда | Что делает |
+|---|---|
+| `npm run tauri android dev` | Запуск на подключённом смартфоне / эмуляторе с hot-reload |
+| `npm run tauri android build -- --target aarch64 --split-per-abi --apk` | Сборка отдельного релизного подписанного APK под arm64-v8a |
+
+Ключ подписи и конфигурация:
+- `src-tauri/gen/android/keystore.properties`
+- `src-tauri/gen/android/release.keystore`
