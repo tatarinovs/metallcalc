@@ -60,6 +60,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -75,6 +76,7 @@ body {
   -ms-overflow-style: none; /* IE/Edge */
   user-select: none;
   -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 input,
@@ -98,4 +100,6 @@ pre,
 
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }

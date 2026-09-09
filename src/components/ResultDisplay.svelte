@@ -127,10 +127,27 @@
       in:fade={{ duration: 200 }}
       out:fade={{ duration: 120 }}
     >
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" opacity="0.4">
-        <path
-          d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6zm-8 4H6v-2h2v2zm0-4H6V7h2v6z"
-        />
+      <svg
+        width="30"
+        height="30"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity="0.45"
+      >
+        <rect x="4" y="2" width="16" height="20" rx="2" />
+        <line x1="8" y1="6" x2="16" y2="6" />
+        <line x1="16" y1="14" x2="16" y2="18" />
+        <path d="M16 10h.01" />
+        <path d="M12 10h.01" />
+        <path d="M8 10h.01" />
+        <path d="M12 14h.01" />
+        <path d="M8 14h.01" />
+        <path d="M12 18h.01" />
+        <path d="M8 18h.01" />
       </svg>
       <p>{densityGcm3 == null ? 'Выберите материал и введите размеры' : 'Введите все размеры для расчёта'}</p>
     </div>

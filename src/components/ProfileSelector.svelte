@@ -171,16 +171,23 @@
     border-radius: var(--radius-md);
     cursor: pointer;
     padding: 6px 4px;
-    position: relative;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
     font: inherit;
     user-select: none;
     min-width: 0;
   }
+  .profile-btn:focus,
+  .profile-btn:focus-visible {
+    outline: none;
+  }
   .profile-btn:hover {
     background: var(--item-hover);
   }
   .profile-btn:active {
+    background: var(--item-hover);
     transform: scale(0.96);
   }
   .profile-btn.selected {

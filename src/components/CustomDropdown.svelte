@@ -56,44 +56,38 @@
     const vh = window.innerHeight;
 
     const insets = getSafeAreaInsets();
-    const minTop = Math.max(12, insets.top + 8);
-    const maxBottom = vh - Math.max(12, insets.bottom + 8);
+    const appEl = containerEl.closest('.app');
+    const appRect = appEl ? appEl.getBoundingClientRect() : { top: 0, bottom: vh };
+
+    const minTop = Math.max(appRect.top + 8, insets.top + 12);
+    const maxBottom = Math.min(appRect.bottom - 8, vh - Math.max(12, insets.bottom + 12));
+    const availableHeight = Math.max(100, maxBottom - minTop);
 
     const approxItemHeight = 42;
-    const padding = 12;
+    const padding = 20;
     const totalContentHeight = options.length * approxItemHeight + padding;
-    const maxViewportHeight = Math.min(480, maxBottom - minTop);
-    const targetHeight = Math.min(totalContentHeight, maxViewportHeight);
+
+    const targetHeight = Math.min(totalContentHeight, availableHeight);
 
     const spaceBelow = maxBottom - triggerRect.bottom;
     const spaceAbove = triggerRect.top - minTop;
 
-    const selIdx = options.findIndex((o) => o.value === value);
-    const activeIndex = selIdx >= 0 ? selIdx : 0;
-
-    // Для коротких списков (до 4 пунктов), если снизу достаточно места
-    if (options.length <= 4 && spaceBelow >= totalContentHeight) {
+    // 1. Если список помещается снизу — открываем строго ПОД полем
+    if (spaceBelow >= totalContentHeight) {
       menuStyle = `top: calc(100% + 4px); bottom: auto; max-height: ${targetHeight}px;`;
       return;
     }
 
-    // Поведение Flutter для больших списков / нехватки места:
-    // Позиционируем меню выше, чтобы задействовать свободное место сверху
-    // и выровнять выбранный элемент около строки вызова
-    let idealTopViewport = triggerRect.top - (activeIndex * approxItemHeight);
-
-    // Ограничиваем сверху с учетом safe-area-inset-top
-    if (idealTopViewport < minTop) {
-      idealTopViewport = minTop;
+    // 2. Если снизу места не хватает, но помещается сверху — открываем НАД полем
+    if (spaceAbove >= totalContentHeight) {
+      menuStyle = `bottom: calc(100% + 4px); top: auto; max-height: ${targetHeight}px;`;
+      return;
     }
 
-    // Ограничиваем снизу с учетом safe-area-inset-bottom
-    if (idealTopViewport + targetHeight > maxBottom) {
-      idealTopViewport = Math.max(minTop, maxBottom - targetHeight);
-    }
-
-    const relativeTop = idealTopViewport - containerRect.top;
-    menuStyle = `top: ${Math.round(relativeTop)}px; bottom: auto; max-height: ${targetHeight}px;`;
+    // 3. Если список длинный и не помещается ни снизу, ни сверху (например, 50 марок стали) —
+    // раскрываем во всю полезную высоту блока приложения от minTop до maxBottom
+    const relativeTop = minTop - containerRect.top;
+    menuStyle = `top: ${Math.round(relativeTop)}px; bottom: auto; height: ${availableHeight}px; max-height: ${availableHeight}px;`;
   }
 
   let focusedIndex = -1;
@@ -101,11 +95,16 @@
   function scrollToFocused() {
     setTimeout(() => {
       if (!menuListEl) return;
-      const items = menuListEl.querySelectorAll('.menu-item');
-      if (items[focusedIndex]) {
-        items[focusedIndex].scrollIntoView({ block: 'nearest' });
+      const activeEl = menuListEl.querySelector('.menu-item.active');
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: 'center' });
+      } else {
+        const items = menuListEl.querySelectorAll('.menu-item');
+        if (items[focusedIndex]) {
+          items[focusedIndex].scrollIntoView({ block: 'nearest' });
+        }
       }
-    }, 10);
+    }, 20);
   }
 
   function open() {
@@ -176,7 +175,7 @@
   }
 </script>
 
-<svelte:window on:click={onWindowClick} on:keydown={onKeyDown} on:resize={onWindowResize} />
+<svelte:window on:click={onWindowClick} on:keydown={onKeyDown} on:resize={onWindowResize} on:scroll={onWindowResize} />
 
 <div class="dropdown-field" bind:this={containerEl} class:disabled>
   {#if label}
@@ -214,10 +213,14 @@
   </button>
 
   {#if isOpen}
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <div class="dropdown-backdrop" on:click|stopPropagation={close}></div>
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div
       class="menu"
       style={menuStyle}
       transition:fly={{ y: -4, duration: 160, easing: cubicOut }}
+      on:click|stopPropagation
     >
       <div class="menu-list" bind:this={menuListEl}>
         {#each options as opt, i}
@@ -324,6 +327,16 @@
     color: var(--accent);
   }
 
+  .dropdown-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: transparent;
+  }
+
   /* Всплывающее меню */
   .menu {
     position: absolute;
@@ -339,6 +352,7 @@
     backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
+    padding: 6px 0;
   }
 
   .menu-list {
@@ -346,10 +360,12 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 6px;
+    padding: 4px 6px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--divider) transparent;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 14px, black calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0px, black 14px, black calc(100% - 14px), transparent 100%);
   }
 
   /* Стилизация скроллбара меню */

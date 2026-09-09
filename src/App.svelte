@@ -243,10 +243,10 @@
   }
 
   .section {
-    margin-bottom: 14px;
+    margin-bottom: 20px;
   }
   .narrow-layout .section {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
   }
   .card {
     padding: 12px;

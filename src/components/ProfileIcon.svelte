@@ -6,10 +6,9 @@
 
 <svg width={size} height={size} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
   {#if type === 'sheet'}
-    <rect x="4" y="7.5" width="18" height="11.5" stroke={color} stroke-width="1.8" />
-    <line x1="4" y1="7.5" x2="2" y2="4.5" stroke={color} stroke-width="1.2" opacity="0.45" />
-    <line x1="22" y1="7.5" x2="24" y2="4.5" stroke={color} stroke-width="1.2" opacity="0.45" />
-    <line x1="2" y1="4.5" x2="24" y2="4.5" stroke={color} stroke-width="1.2" opacity="0.45" />
+    <polygon points="2,16 18,16 24,5 8,5" stroke={color} stroke-width="1.8" stroke-linejoin="round" />
+    <polygon points="2,16 18,16 18,21 2,21" stroke={color} stroke-width="1.8" stroke-linejoin="round" />
+    <polygon points="18,16 24,5 24,10 18,21" stroke={color} stroke-width="1.8" stroke-linejoin="round" />
   {:else if type === 'square'}
     <rect x="5" y="5" width="16" height="16" stroke={color} stroke-width="1.8" />
   {:else if type === 'circle'}
