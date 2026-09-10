@@ -59,56 +59,60 @@
       in:fly={{ y: 12, duration: 280, easing: cubicOut }}
       out:fade={{ duration: 150 }}
     >
-      <div class="result-header">
-        <span class="result-label">Теоретическая масса</span>
-        <button type="button" class="copy-btn" class:copied on:click={copy}>
-          {#if copied}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2l-1.5-1.5z" />
-            </svg>
-            Скопировано!
-          {:else}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"
-              />
-            </svg>
-            Копировать
-          {/if}
-        </button>
-      </div>
-      <div class="mass">{massStr}</div>
-      <div class="divider" />
-      <div class="chips">
-        <div class="chip">
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-            />
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-            <line x1="12" y1="22.08" x2="12" y2="12" />
-          </svg>
-          <div class="chip-text">
-            <span class="chip-label">Объём</span>
-            <span class="chip-value">{volumeStr}</span>
-          </div>
+      <div class="result-top">
+        <div class="result-header">
+          <span class="result-label">Теоретическая масса</span>
+          <button type="button" class="copy-btn" class:copied on:click={copy}>
+            {#if copied}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.2l-3.5-3.5L4 14.2 9 19.2 20 8.2l-1.5-1.5z" />
+              </svg>
+              Скопировано!
+            {:else}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"
+                />
+              </svg>
+              Копировать
+            {/if}
+          </button>
         </div>
-        <div class="chip">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2 12h20M6 8v8M18 8v8" stroke="currentColor" stroke-width="2" fill="none" />
-          </svg>
-          <div class="chip-text">
-            <span class="chip-label">Вес 1 п.м.</span>
-            <span class="chip-value">{linearMassStr}</span>
+        <div class="mass">{massStr}</div>
+      </div>
+      <div class="result-bottom">
+        <div class="divider" />
+        <div class="chips">
+          <div class="chip">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <div class="chip-text">
+              <span class="chip-label">Объём</span>
+              <span class="chip-value">{volumeStr}</span>
+            </div>
+          </div>
+          <div class="chip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 12h20M6 8v8M18 8v8" stroke="currentColor" stroke-width="2" fill="none" />
+            </svg>
+            <div class="chip-text">
+              <span class="chip-label">Вес 1 п.м.</span>
+              <span class="chip-value">{linearMassStr}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -157,6 +161,16 @@
 <style>
   .result-container {
     position: relative;
+    display: grid;
+    grid-template-columns: 100%;
+    height: 100%;
+  }
+  .result-card,
+  .empty-card {
+    grid-area: 1 / 1;
+    min-height: 188px;
+    height: 100%;
+    box-sizing: border-box;
   }
   .result-card {
     border-radius: var(--radius-card);
@@ -164,6 +178,17 @@
     padding: 16px;
     background: linear-gradient(135deg, var(--result-grad-start), var(--result-grad-end));
     box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .result-top {
+    display: flex;
+    flex-direction: column;
+  }
+  .result-bottom {
+    display: flex;
+    flex-direction: column;
   }
   .result-header {
     display: flex;
@@ -262,12 +287,12 @@
     cursor: text;
   }
   .empty-card {
-    height: 90px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 24px 16px;
     background: var(--surface);
     border: 1px solid var(--divider);
     border-radius: var(--radius-card);
@@ -277,8 +302,9 @@
     margin: 0;
     font-size: 13px;
     text-align: center;
-    opacity: 0.7;
+    opacity: 0.75;
     max-width: 80%;
+    line-height: 1.4;
   }
   .snackbar {
     position: fixed;

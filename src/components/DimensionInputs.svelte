@@ -156,13 +156,11 @@
     font-weight: 500;
     color: var(--text-primary);
     font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
   }
   input:focus {
     outline: none;
     border-color: var(--accent);
-    border-width: 1px;
-    box-shadow: var(--focus-ring);
   }
   .suffix {
     position: absolute;

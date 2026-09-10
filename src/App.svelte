@@ -95,70 +95,57 @@
 <div class="app" bind:this={appElement} bind:clientWidth={containerWidth}>
   {#if isWide}
     <div class="wide-layout">
-      <div class="col col-left">
-        <section class="section">
-          <div class="card">
-            <ProfileSelector selected={profile} on:change={onProfileChanged} />
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="card">
-            <DimensionInputs {profile} on:change={onDimsChanged} />
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="card">
-            <MaterialSelector on:change={onGradeChanged} />
-          </div>
-        </section>
+      <!-- Ряд 1, Лево: Геометрия (Профиль + Размеры) -->
+      <div class="card card-geometry">
+        <ProfileSelector selected={profile} on:change={onProfileChanged} />
+        <div class="card-divider" />
+        <DimensionInputs {profile} on:change={onDimsChanged} />
       </div>
 
+      <!-- Разделитель на 2 ряда -->
       <div class="vdivider" />
 
-      <div class="col col-right">
-        <section class="section">
-          <ResultDisplay
-            {volumeMm3}
-            densityGcm3={grade?.density ?? null}
-            {linearMassKg}
-          />
-        </section>
+      <!-- Ряд 1, Право: Результат -->
+      <div class="cell-result">
+        <ResultDisplay
+          {volumeMm3}
+          densityGcm3={grade?.density ?? null}
+          {linearMassKg}
+        />
+      </div>
 
-        <section class="section">
-          <div class="formula-hint">
-            <div class="formula-title">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M18 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm8 8h-6v-2h6v2zm0-4h-6v-2h6v2zm0-4h-6V7h6v2z"
-                />
-              </svg>
-              <span>Формула расчёта</span>
-            </div>
-            <pre>{getFormula(profile)}</pre>
-            {#if grade}
-              <div class="formula-density">ρ = {grade.density} г/см³</div>
-            {/if}
-          </div>
-        </section>
+      <!-- Ряд 2, Лево: Материал -->
+      <div class="card card-material">
+        <MaterialSelector on:change={onGradeChanged} />
+      </div>
+
+      <!-- Ряд 2, Право: Формула -->
+      <div class="formula-hint">
+        <div class="formula-title">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M18 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm8 8h-6v-2h6v2zm0-4h-6v-2h6v2zm0-4h-6V7h6v2z"
+            />
+          </svg>
+          <span>Формула расчёта</span>
+        </div>
+        <pre>{getFormula(profile)}</pre>
+        {#if grade}
+          <div class="formula-density">ρ = {grade.density} г/см³</div>
+        {/if}
       </div>
     </div>
   {:else}
     <div class="narrow-layout">
       <section class="section">
-        <div class="card">
+        <div class="card card-geometry">
           <ProfileSelector selected={profile} on:change={onProfileChanged} />
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="card">
+          <div class="card-divider" />
           <DimensionInputs {profile} on:change={onDimsChanged} />
         </div>
       </section>
@@ -222,29 +209,38 @@
   }
 
   .wide-layout {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 5fr auto 4fr;
+    grid-template-rows: auto auto;
+    row-gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-  }
-  .col {
-    flex: 5;
     padding: 16px;
-    min-width: 0;
-  }
-  .col-right {
-    flex: 4;
+    align-items: stretch;
   }
   .vdivider {
+    grid-column: 2;
+    grid-row: 1 / 3;
     width: 1px;
     background: var(--divider);
-    margin: 16px 0;
+    margin: 0 16px;
     align-self: stretch;
   }
-
-  .section {
-    margin-bottom: 20px;
+  .cell-result {
+    grid-column: 3;
+    grid-row: 1;
+    height: 100%;
+    min-height: 188px;
+    min-width: 0;
   }
+  .card-material {
+    grid-column: 1;
+    grid-row: 2;
+    height: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
   .narrow-layout .section {
     margin-bottom: 16px;
   }
@@ -254,12 +250,37 @@
     border: 1px solid var(--divider);
     border-radius: var(--radius-card);
   }
+  .card-geometry {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 188px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .card-divider {
+    height: 1px;
+    background: var(--divider);
+    margin: 12px 0;
+  }
 
   .formula-hint {
     padding: 14px;
     background: var(--surface-container);
     border: 1px solid var(--divider);
     border-radius: var(--radius-md);
+  }
+  .wide-layout .formula-hint {
+    grid-column: 3;
+    grid-row: 2;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 168px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
   }
   .formula-title {
     display: flex;
@@ -280,6 +301,9 @@
     user-select: text;
     -webkit-user-select: text;
     cursor: text;
+  }
+  .wide-layout .formula-hint pre {
+    flex: 1;
   }
   .formula-density {
     margin-top: 6px;

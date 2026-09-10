@@ -22,8 +22,10 @@
 
   let containerEl;
   let triggerEl;
+  let triggerWrapperEl;
   let menuListEl;
   let menuStyle = '';
+  let isOpeningUp = false;
 
   $: selectedOption = options.find((o) => o.value === value) ?? null;
 
@@ -50,13 +52,13 @@
   }
 
   function updateMenuPosition() {
-    if (!triggerEl || !containerEl || typeof window === 'undefined') return;
+    if (!triggerEl || !triggerWrapperEl || typeof window === 'undefined') return;
     const triggerRect = triggerEl.getBoundingClientRect();
-    const containerRect = containerEl.getBoundingClientRect();
+    const wrapperRect = triggerWrapperEl.getBoundingClientRect();
     const vh = window.innerHeight;
 
     const insets = getSafeAreaInsets();
-    const appEl = containerEl.closest('.app');
+    const appEl = containerEl?.closest('.app') || triggerWrapperEl.closest('.app');
     const appRect = appEl ? appEl.getBoundingClientRect() : { top: 0, bottom: vh };
 
     const minTop = Math.max(appRect.top + 8, insets.top + 12);
@@ -73,20 +75,23 @@
     const spaceAbove = triggerRect.top - minTop;
 
     // 1. Если список помещается снизу — открываем строго ПОД полем
-    if (spaceBelow >= totalContentHeight) {
+    if (spaceBelow >= totalContentHeight + 4) {
+      isOpeningUp = false;
       menuStyle = `top: calc(100% + 4px); bottom: auto; max-height: ${targetHeight}px;`;
       return;
     }
 
     // 2. Если снизу места не хватает, но помещается сверху — открываем НАД полем
-    if (spaceAbove >= totalContentHeight) {
+    if (spaceAbove >= totalContentHeight + 4) {
+      isOpeningUp = true;
       menuStyle = `bottom: calc(100% + 4px); top: auto; max-height: ${targetHeight}px;`;
       return;
     }
 
     // 3. Если список длинный и не помещается ни снизу, ни сверху (например, 50 марок стали) —
     // раскрываем во всю полезную высоту блока приложения от minTop до maxBottom
-    const relativeTop = minTop - containerRect.top;
+    isOpeningUp = false;
+    const relativeTop = minTop - wrapperRect.top;
     menuStyle = `top: ${Math.round(relativeTop)}px; bottom: auto; height: ${availableHeight}px; max-height: ${availableHeight}px;`;
   }
 
@@ -177,89 +182,100 @@
 
 <svelte:window on:click={onWindowClick} on:keydown={onKeyDown} on:resize={onWindowResize} on:scroll={onWindowResize} />
 
-<div class="dropdown-field" bind:this={containerEl} class:disabled>
+<div class="dropdown-field" bind:this={containerEl} class:disabled class:open={isOpen}>
   {#if label}
     <span class="field-label">{label}</span>
   {/if}
 
-  <button
-    type="button"
-    class="trigger"
-    class:open={isOpen}
-    on:click={toggle}
-    bind:this={triggerEl}
-    {disabled}
-  >
-    <div class="trigger-content">
-      {#if selectedOption}
-        <span class="trigger-text">{selectedOption.label}</span>
-        {#if selectedOption.sublabel}
-          <span class="trigger-sub">{selectedOption.sublabel}</span>
+  <div class="trigger-wrapper" bind:this={triggerWrapperEl}>
+    <button
+      type="button"
+      class="trigger"
+      class:open={isOpen}
+      on:click={toggle}
+      bind:this={triggerEl}
+      {disabled}
+    >
+      <div class="trigger-content">
+        {#if selectedOption}
+          <span class="trigger-text">{selectedOption.label}</span>
+          {#if selectedOption.sublabel}
+            <span class="trigger-sub">{selectedOption.sublabel}</span>
+          {/if}
+        {:else}
+          <span class="placeholder">{placeholder}</span>
         {/if}
-      {:else}
-        <span class="placeholder">{placeholder}</span>
-      {/if}
-    </div>
-    <svg
-      class="chevron"
-      class:rotate={isOpen}
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
-      <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
-    </svg>
-  </button>
-
-  {#if isOpen}
-    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <div class="dropdown-backdrop" on:click|stopPropagation={close}></div>
-    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-    <div
-      class="menu"
-      style={menuStyle}
-      transition:fly={{ y: -4, duration: 160, easing: cubicOut }}
-      on:click|stopPropagation
-    >
-      <div class="menu-list" bind:this={menuListEl}>
-        {#each options as opt, i}
-          <button
-            type="button"
-            class="menu-item"
-            class:active={opt.value === value}
-            class:focused={i === focusedIndex}
-            on:click|stopPropagation={() => select(opt)}
-          >
-            <span class="item-label">{opt.label}</span>
-            {#if opt.sublabel}
-              <span class="item-sub">{opt.sublabel}</span>
-            {/if}
-            {#if opt.value === value}
-              <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-            {/if}
-          </button>
-        {/each}
       </div>
-    </div>
-  {/if}
+      <svg
+        class="chevron"
+        class:rotate={isOpen}
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+      </svg>
+    </button>
+
+    {#if isOpen}
+      <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+      <div class="dropdown-backdrop" on:click|stopPropagation={close}></div>
+      <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+      <div
+        class="menu"
+        style={menuStyle}
+        transition:fly={{ y: isOpeningUp ? 4 : -4, duration: 160, easing: cubicOut }}
+        on:click|stopPropagation
+      >
+        <div class="menu-list" bind:this={menuListEl}>
+          {#each options as opt, i}
+            <button
+              type="button"
+              class="menu-item"
+              class:active={opt.value === value}
+              class:focused={i === focusedIndex}
+              on:click|stopPropagation={() => select(opt)}
+            >
+              <span class="item-label">{opt.label}</span>
+              {#if opt.sublabel}
+                <span class="item-sub">{opt.sublabel}</span>
+              {/if}
+              {#if opt.value === value}
+                <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              {/if}
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
   .dropdown-field {
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: 6px;
     width: 100%;
   }
 
+  .dropdown-field.open {
+    position: relative;
+    z-index: 1000;
+  }
+
   .field-label {
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
+  }
+
+  .trigger-wrapper {
+    position: relative;
+    width: 100%;
   }
 
   .trigger {
@@ -286,7 +302,6 @@
 
   .trigger.open {
     border-color: var(--accent);
-    box-shadow: var(--focus-ring);
   }
 
   .trigger:disabled {

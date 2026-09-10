@@ -23,7 +23,7 @@
   --radius-sm: 6px;
 
   /* --- Интерактивные состояния --- */
-  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  --focus-ring: none;
   --item-hover: color-mix(in srgb, var(--accent) 8%, var(--surface-variant));
   --item-selected: color-mix(in srgb, var(--accent) 15%, transparent);
 
