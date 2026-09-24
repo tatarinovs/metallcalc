@@ -44,12 +44,12 @@ if /i "%TARGET_OPT%"=="-all" set "TARGET_OPT=all"
 if /i "%TARGET_OPT%"=="--all" set "TARGET_OPT=all"
 
 if "%TARGET_OPT%"=="" (
-    echo Выберите целевую архитектуру для сборки Windows EXE:
-    echo   [1] x64  - 64-битная Windows (x86_64-pc-windows-msvc) [По умолчанию]
-    echo   [2] x86  - 32-битная Windows (i686-pc-windows-msvc)
-    echo   [3] Все  - Собрать обе архитектуры (x64 + x86)
+    echo Select target architecture for Windows EXE:
+    echo   [1] x64  - 64-bit Windows (x86_64-pc-windows-msvc) [Default]
+    echo   [2] x86  - 32-bit Windows (i686-pc-windows-msvc)
+    echo   [3] All  - Build both architectures (x64 + x86)
     echo.
-    set /p "USER_CHOICE=Ваш выбор [1-3] (Enter = 1): "
+    set /p "USER_CHOICE=Your choice [1-3] (Enter = 1): "
     if "!USER_CHOICE!"=="2" set "TARGET_OPT=x86"
     if "!USER_CHOICE!"=="3" set "TARGET_OPT=all"
     if "!TARGET_OPT!"=="" set "TARGET_OPT=x64"

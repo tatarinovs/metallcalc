@@ -67,6 +67,7 @@
 | **Android** | `metallcalc-arm64-release.apk` | ARM64 (arm64-v8a) | Подписанный APK для современных устройств |
 | **Android** | `metallcalc-armv7-release.apk` | ARMv7 (32-bit ARM) | Подписанный APK для старых смартфонов |
 | **Android** | `metallcalc-x86-release.apk` | x86 (32-bit Intel) | Подписанный APK для x86-устройств/эмуляторов |
+| **Web** | `metallcalc-web.zip` | HTML / CSS / JS | Готовый архив статики для любого веб-сервера / CMS |
 
 ---
 
@@ -87,14 +88,15 @@ npm run dev
 npm test
 ```
 
-### Сборка в один клик (Windows .bat)
-- **`build-exe.bat`** — сборка под Windows. При запуске без параметров предлагает интерактивное меню (`x64`, `x86` или `all`). Можно вызывать с аргументом:
+### Скрипты сборки (.bat)
+- **`build-all.bat`** — **единый скрипт «всё в одном»**: запускает тесты, собирает и упаковывает веб-версию в `.zip`, компилирует Windows EXE (`x64` и `x86`) и собирает подписанные Android APK (`ARM64`, `ARMv7`, `x86`).
+- **`build-exe.bat`** — сборка под Windows. Меню выбора (`x64`, `x86`, `all`) или аргумент командной строки:
   ```cmd
-  build-exe.bat x64   :: Собрать только 64-битную версию
-  build-exe.bat x86   :: Собрать 32-битную x86 версию
+  build-exe.bat x64   :: Собрать 64-битную версию
+  build-exe.bat x86   :: Собрать 32-битную версию
   build-exe.bat all   :: Собрать обе версии (x64 + x86)
   ```
-- **`build-apk.bat`** — сборка подписанных APK для Android. Предлагает выбор архитектуры (`arm64`, `armv7`, `x86`, `all`). Можно вызывать с аргументом:
+- **`build-apk.bat`** — сборка Android APK. Меню выбора (`arm64`, `armv7`, `x86`, `all`) или аргумент командной строки:
   ```cmd
   build-apk.bat arm64 :: Собрать ARM64 APK
   build-apk.bat armv7 :: Собрать 32-битный ARM APK (ARMv7)

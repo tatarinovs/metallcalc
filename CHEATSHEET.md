@@ -9,6 +9,7 @@
 
 | Скрипт | Назначение | Результат в `releases/` |
 |---|---|---|
+| `build-all.bat` | Собрать ВСЁ: Web (zip), Windows (x64+x86), Android (arm64+armv7+x86) | Полный набор всех дистрибутивов в `releases\` |
 | `build-exe.bat [x64\|x86\|all]` | Собрать Windows `.exe` и установщик NSIS под x64 и/или x86 | `releases\metallcalc.exe` (~2.7 МБ)<br>`releases\metallcalc-setup.exe` (~1.0 МБ)<br>`releases\metallcalc-x86.exe` (~2.5 МБ)<br>`releases\metallcalc-x86-setup.exe` (~1.0 МБ) |
 | `build-apk.bat [arm64\|armv7\|x86\|all]` | Собрать подписанные релизные `.apk` (ARM64, ARMv7, x86) | `releases\metallcalc-arm64-release.apk` (~5.7 МБ)<br>`releases\metallcalc-armv7-release.apk` (~5.2 МБ)<br>`releases\metallcalc-x86-release.apk` (~5.5 МБ) |
 

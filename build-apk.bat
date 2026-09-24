@@ -74,14 +74,14 @@ if /i "%TARGET_OPT%"=="i686" set "TARGET_OPT=x86"
 if /i "%TARGET_OPT%"=="all" set "TARGET_OPT=all"
 
 if "%TARGET_OPT%"=="" (
-    echo Выберите целевую архитектуру для Android APK:
-    echo   [1] arm64-v8a   - 64-битные ARM смартфоны (по умолчанию)
-    echo   [2] armeabi-v7a - 32-битные ARM устройства (ARMv7 / AMR)
-    echo   [3] x86         - 32-битные Intel устройства / эмуляторы
-    echo   [4] Все 32-бит  - Собрать ARMv7 + x86
-    echo   [5] Все         - Собрать все (arm64 + armv7 + x86)
+    echo Select target architecture for Android APK:
+    echo   [1] arm64-v8a   - 64-bit ARM devices (Default)
+    echo   [2] armeabi-v7a - 32-bit ARM devices (ARMv7)
+    echo   [3] x86         - 32-bit Intel devices / emulators
+    echo   [4] All 32-bit  - Build ARMv7 + x86
+    echo   [5] All         - Build all architectures (arm64 + armv7 + x86)
     echo.
-    set /p "USER_CHOICE=Ваш выбор [1-5] (Enter = 1): "
+    set /p "USER_CHOICE=Your choice [1-5] (Enter = 1): "
     if "!USER_CHOICE!"=="2" set "TARGET_OPT=armv7"
     if "!USER_CHOICE!"=="3" set "TARGET_OPT=x86"
     if "!USER_CHOICE!"=="4" set "TARGET_OPT=all_32"
