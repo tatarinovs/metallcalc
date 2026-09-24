@@ -78,14 +78,12 @@ if "%TARGET_OPT%"=="" (
     echo   [1] arm64-v8a   - 64-bit ARM devices (Default)
     echo   [2] armeabi-v7a - 32-bit ARM devices (ARMv7)
     echo   [3] x86         - 32-bit Intel devices / emulators
-    echo   [4] All 32-bit  - Build ARMv7 + x86
-    echo   [5] All         - Build all architectures (arm64 + armv7 + x86)
+    echo   [4] All         - Build all architectures (arm64 + armv7 + x86)
     echo.
-    set /p "USER_CHOICE=Your choice [1-5] (Enter = 1): "
+    set /p "USER_CHOICE=Your choice [1-4] (Enter = 1): "
     if "!USER_CHOICE!"=="2" set "TARGET_OPT=armv7"
     if "!USER_CHOICE!"=="3" set "TARGET_OPT=x86"
-    if "!USER_CHOICE!"=="4" set "TARGET_OPT=all_32"
-    if "!USER_CHOICE!"=="5" set "TARGET_OPT=all"
+    if "!USER_CHOICE!"=="4" set "TARGET_OPT=all"
     if "!TARGET_OPT!"=="" set "TARGET_OPT=arm64"
 )
 
