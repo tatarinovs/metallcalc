@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo ============================================================
-echo   Building Signed Android APK (arm64-v8a) - MetallCalc
+echo   Building Signed Android APK - MetallCalc
 echo ============================================================
 echo.
 
@@ -60,7 +60,36 @@ exit /b 1
 
 :npm_ok
 
-:: 4. Check Keystore
+:: 4. Select Target Architecture
+set "TARGET_OPT=%~1"
+if /i "%TARGET_OPT%"=="--no-pause" set "TARGET_OPT="
+if /i "%TARGET_OPT%"=="arm64" set "TARGET_OPT=arm64"
+if /i "%TARGET_OPT%"=="aarch64" set "TARGET_OPT=arm64"
+if /i "%TARGET_OPT%"=="armv7" set "TARGET_OPT=armv7"
+if /i "%TARGET_OPT%"=="arm" set "TARGET_OPT=armv7"
+if /i "%TARGET_OPT%"=="amr" set "TARGET_OPT=armv7"
+if /i "%TARGET_OPT%"=="amr86" set "TARGET_OPT=all_32"
+if /i "%TARGET_OPT%"=="x86" set "TARGET_OPT=x86"
+if /i "%TARGET_OPT%"=="i686" set "TARGET_OPT=x86"
+if /i "%TARGET_OPT%"=="all" set "TARGET_OPT=all"
+
+if "%TARGET_OPT%"=="" (
+    echo Выберите целевую архитектуру для Android APK:
+    echo   [1] arm64-v8a   - 64-битные ARM смартфоны (по умолчанию)
+    echo   [2] armeabi-v7a - 32-битные ARM устройства (ARMv7 / AMR)
+    echo   [3] x86         - 32-битные Intel устройства / эмуляторы
+    echo   [4] Все 32-бит  - Собрать ARMv7 + x86
+    echo   [5] Все         - Собрать все (arm64 + armv7 + x86)
+    echo.
+    set /p "USER_CHOICE=Ваш выбор [1-5] (Enter = 1): "
+    if "!USER_CHOICE!"=="2" set "TARGET_OPT=armv7"
+    if "!USER_CHOICE!"=="3" set "TARGET_OPT=x86"
+    if "!USER_CHOICE!"=="4" set "TARGET_OPT=all_32"
+    if "!USER_CHOICE!"=="5" set "TARGET_OPT=all"
+    if "!TARGET_OPT!"=="" set "TARGET_OPT=arm64"
+)
+
+:: 5. Check Keystore
 set "KEYSTORE_FILE=src-tauri\gen\android\release.keystore"
 set "KEYSTORE_PROPS=src-tauri\gen\android\keystore.properties"
 
@@ -83,7 +112,7 @@ if not exist "%KEYSTORE_PROPS%" (
     echo keyPassword=metallcalc>> "%KEYSTORE_PROPS%"
 )
 
-:: 5. Run tests
+:: 6. Run tests
 echo.
 echo [1/3] Running Vitest tests...
 call %NPM_CMD% test
@@ -93,27 +122,66 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-:: 6. Build arm64 APK
+:: 7. Build APKs
 echo.
-echo [2/3] Building signed arm64-v8a APK...
-call %NPM_CMD% run tauri android build -- --target aarch64 --split-per-abi --apk
+if /i "%TARGET_OPT%"=="arm64" (
+    echo [2/3] Building signed arm64-v8a APK...
+    call %NPM_CMD% run tauri android build -- --target aarch64 --split-per-abi --apk
+) else if /i "%TARGET_OPT%"=="armv7" (
+    echo [2/3] Building signed armeabi-v7a (ARMv7) APK...
+    call %NPM_CMD% run tauri android build -- --target armv7 --split-per-abi --apk
+) else if /i "%TARGET_OPT%"=="x86" (
+    echo [2/3] Building signed x86 APK...
+    call %NPM_CMD% run tauri android build -- --target i686 --split-per-abi --apk
+) else if /i "%TARGET_OPT%"=="all_32" (
+    echo [2/3] Building signed ARMv7 + x86 APKs...
+    call %NPM_CMD% run tauri android build -- --target armv7 i686 --split-per-abi --apk
+) else (
+    echo [2/3] Building signed APKs for all targets (arm64, armv7, x86)...
+    call %NPM_CMD% run tauri android build -- --target aarch64 armv7 i686 --split-per-abi --apk
+)
+
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Android build failed!
     pause
     exit /b 1
 )
 
-:: 7. Copy to dist
+:: 8. Copy to releases
 echo.
-echo [3/3] Copying APK to releases\...
+echo [3/3] Copying APK(s) to releases\...
 if not exist "releases" mkdir "releases"
 
-set "APK_SRC=src-tauri\gen\android\app\build\outputs\apk\arm64\release\app-arm64-release.apk"
-if not exist "%APK_SRC%" set "APK_SRC=src-tauri\gen\android\app\build\outputs\apk\universal\release\app-universal-release.apk"
+set "APK_BASE=src-tauri\gen\android\app\build\outputs\apk"
 
-if exist "%APK_SRC%" (
-    copy /y "%APK_SRC%" "releases\metallcalc-arm64-release.apk" >nul
+:: Copy ARM64
+if exist "%APK_BASE%\arm64\release\app-arm64-release.apk" (
+    copy /y "%APK_BASE%\arm64\release\app-arm64-release.apk" "releases\metallcalc-arm64-release.apk" >nul
     echo   [OK] releases\metallcalc-arm64-release.apk
+) else if exist "%APK_BASE%\arm64-v8a\release\app-arm64-v8a-release.apk" (
+    copy /y "%APK_BASE%\arm64-v8a\release\app-arm64-v8a-release.apk" "releases\metallcalc-arm64-release.apk" >nul
+    echo   [OK] releases\metallcalc-arm64-release.apk
+)
+
+:: Copy ARMv7
+if exist "%APK_BASE%\arm\release\app-arm-release.apk" (
+    copy /y "%APK_BASE%\arm\release\app-arm-release.apk" "releases\metallcalc-armv7-release.apk" >nul
+    echo   [OK] releases\metallcalc-armv7-release.apk
+) else if exist "%APK_BASE%\armeabi-v7a\release\app-armeabi-v7a-release.apk" (
+    copy /y "%APK_BASE%\armeabi-v7a\release\app-armeabi-v7a-release.apk" "releases\metallcalc-armv7-release.apk" >nul
+    echo   [OK] releases\metallcalc-armv7-release.apk
+)
+
+:: Copy x86
+if exist "%APK_BASE%\x86\release\app-x86-release.apk" (
+    copy /y "%APK_BASE%\x86\release\app-x86-release.apk" "releases\metallcalc-x86-release.apk" >nul
+    echo   [OK] releases\metallcalc-x86-release.apk
+)
+
+:: Fallback / Universal
+if exist "%APK_BASE%\universal\release\app-universal-release.apk" (
+    copy /y "%APK_BASE%\universal\release\app-universal-release.apk" "releases\metallcalc-universal-release.apk" >nul
+    echo   [OK] releases\metallcalc-universal-release.apk
 )
 
 echo.

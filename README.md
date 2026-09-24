@@ -1,83 +1,120 @@
-# Металлокалькулятор (Svelte 4 + Tauri 2)
+# ⚖️ Металлокалькулятор (MetalCalc)
 
-Высокопроизводительный металлокалькулятор, портированный с Flutter/Dart на **Svelte 4 + Vite + Tauri 2**.
+> Быстрый, легковесный и точный кроссплатформенный калькулятор расчёта массы и длины металлопроката.
 
-Логика расчёта объёма, массы, линейной плотности и полная база материалов перенесены **1:1** из исходных `.dart` файлов.
-
----
-
-## Быстрый старт сборки (в 1 клик)
-
-Для удобства добавлены готовые Windows bat-скрипты, которые автоматически складывают готовые файлы в папку **`dist/`**:
-
-- **`build-exe.bat`** — сборка нативного Windows `.exe` и установщика NSIS (Release, без UPX) $\rightarrow$ копируются в `releases\metallcalc.exe` и `releases\metallcalc-setup.exe`.
-- **`build-apk.bat`** — сборка релизного подписанного APK для **arm64-v8a** $\rightarrow$ копируется в `dist\metallcalc-arm64-release.apk`.
-
-### Размеры бинарников (сравнение с Flutter)
-
-| Платформа | Формат | Flutter / Dart | Svelte + Tauri 2 | Экономия |
-|---|---|---|---|---|
-| **Windows** (Standalone EXE) | `.exe` | ~28 МБ | **2.53 МБ** | **~11x меньше** |
-| **Windows** (NSIS Setup) | `.exe` | ~15 МБ | **0.98 МБ (1028 КБ)** | **~15x меньше** |
-| **Android** (arm64-v8a) | `.apk` | ~19–25 МБ | **5.88 МБ** | **~4x меньше** |
-| **Web** (SPA Bundle) | `dist/` | ~20 МБ | **~56 КБ (19 КБ gzip)** | **~350x меньше** |
+[![Svelte 4](https://img.shields.io/badge/Svelte-4.2-FF3E00?style=flat-square&logo=svelte&logoColor=white)](https://svelte.dev/)
+[![Tauri 2](https://img.shields.io/badge/Tauri-v2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Platforms](https://img.shields.io/badge/Platform-Windows%20%7C%20Android%20%7C%20Web-blue?style=flat-square)](releases/)
+[![Tests](https://img.shields.io/badge/Tests-19%20passed-brightgreen?style=flat-square&logo=vitest&logoColor=white)](test/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
 ---
 
-## Тестирование (Vitest)
+## 📸 Скриншоты
 
-В проекте настроен тестовый набор Vitest (`test/calculator.test.js`), полностью воспроизводящий все тесты из оригинального `calculator_test.dart` (12 профилей, расчёт объёма, проверка некорректной геометрии, формулы массы и веса 1 п.м.):
+| Десктопная версия (Windows / Web) | Мобильная версия (Android) |
+| :---: | :---: |
+| ![Десктопный интерфейс](docs/screenshots/desktop.png) | ![Мобильный интерфейс](docs/screenshots/mobile.png) |
 
+---
+
+## ✨ Возможности
+
+- ⚡ **Мгновенный расчёт** — автоматический пересчёт общей массы и веса 1 погонного метра при вводе любых параметров.
+- 📐 **12 типов проката** — лист, круг, квадрат, шестигранник, трубы (круглая, квадратная, прямоугольная), уголки (равнополочный и неравнополочный), швеллер, двутавр и тавр.
+- 🔩 **Большая база материалов** — чёрная и нержавеющая сталь, медь, алюминий, латунь, бронза, титан, цинк, свинец и др. с точными удельными плотностями.
+- 🌓 **Адаптивный дизайн и темы** — удобная работа на смартфонах и ПК, поддержка тёмной и светлой тем, автосохранение последнего выбора.
+- 🪶 **Минимум веса, максимум скорости** — собран на Svelte 4 и Tauri 2, десктопный бинарник занимает всего ~2.7 МБ, а мобильный APK — ~5.7 МБ.
+
+---
+
+## 📋 Минимальные системные требования
+
+### 💻 Windows
+- **Операционная система**: Windows 7 SP1 / 8 / 8.1 / 10 / 11 (32-bit `x86` или 64-bit `x64`).
+- **Среда выполнения**: [Microsoft Edge WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (в Windows 10/11 предустановлен; для Windows 7/8 ставится автоматически).
+- **Процессор**: 1 ГГц и выше.
+- **Оперативная память**: от 512 МБ (потребление памяти приложением ~30–50 МБ).
+- **Свободное место на диске**: от 15 МБ.
+
+### 📱 Android
+- **Операционная система**: Android 7.0 (Nougat, API level 24) или выше.
+- **Архитектура процессора**: 
+  - `ARM64` (arm64-v8a) — большинство современных смартфонов и планшетов;
+  - `ARMv7` (armeabi-v7a) — старые 32-битные ARM устройства;
+  - `x86` — планшеты на Intel Atom и эмуляторы.
+- **Компонент**: системный `Android System WebView` (обновляется через Google Play).
+- **Оперативная память**: от 1 ГБ.
+- **Свободное место на диске**: от 20 МБ.
+
+### 🌐 Web-виджет (браузер)
+- **Браузер**: Chrome 80+, Firefox 75+, Edge 80+, Safari 14+ или любой современный мобильный браузер.
+- **Сеть**: подключение к интернету требуется только для первой загрузки; далее калькулятор работает **100% офлайн**.
+
+---
+
+## 📦 Готовые сборки
+
+Файлы размещаются в папке [`releases/`](releases/):
+
+| Платформа | Файл | Архитектура | Описание |
+|---|---|---|---|
+| **Windows** | `metallcalc.exe` / `metallcalc-x64.exe` | 64-bit (x64) | Портативная версия (не требует установки) |
+| **Windows** | `metallcalc-setup.exe` | 64-bit (x64) | Установщик Windows (NSIS) |
+| **Windows** | `metallcalc-x86.exe` | 32-bit (x86) | Портативная версия для 32-битной Windows |
+| **Windows** | `metallcalc-x86-setup.exe` | 32-bit (x86) | Установщик для 32-битной Windows (NSIS) |
+| **Android** | `metallcalc-arm64-release.apk` | ARM64 (arm64-v8a) | Подписанный APK для современных устройств |
+| **Android** | `metallcalc-armv7-release.apk` | ARMv7 (32-bit ARM) | Подписанный APK для старых смартфонов |
+| **Android** | `metallcalc-x86-release.apk` | x86 (32-bit Intel) | Подписанный APK для x86-устройств/эмуляторов |
+
+---
+
+## 🚀 Разработка и сборка
+
+### Установка зависимостей
+```bash
+npm install
+```
+
+### Запуск в браузере (Dev-режим)
+```bash
+npm run dev
+```
+
+### Тестирование (Vitest)
 ```bash
 npm test
 ```
 
+### Сборка в один клик (Windows .bat)
+- **`build-exe.bat`** — сборка под Windows. При запуске без параметров предлагает интерактивное меню (`x64`, `x86` или `all`). Можно вызывать с аргументом:
+  ```cmd
+  build-exe.bat x64   :: Собрать только 64-битную версию
+  build-exe.bat x86   :: Собрать 32-битную x86 версию
+  build-exe.bat all   :: Собрать обе версии (x64 + x86)
+  ```
+- **`build-apk.bat`** — сборка подписанных APK для Android. Предлагает выбор архитектуры (`arm64`, `armv7`, `x86`, `all`). Можно вызывать с аргументом:
+  ```cmd
+  build-apk.bat arm64 :: Собрать ARM64 APK
+  build-apk.bat armv7 :: Собрать 32-битный ARM APK (ARMv7)
+  build-apk.bat x86   :: Собрать x86 APK
+  build-apk.bat all   :: Собрать APK под все архитектуры
+  ```
+
+Подробные команды и нюансы сборки описаны в [CHEATSHEET.md](CHEATSHEET.md).
+
 ---
 
-## Запуск веб-версии
+## 🌐 Встраивание на сайт
 
+Калькулятор можно легко встроить в любую веб-страницу или CMS:
 ```bash
-npm install
-npm run dev       # локальный сервер разработки (http://localhost:5173)
-npm run build     # прод-сборка в dist/ (~56 КБ)
-npm run preview   # локальный предпросмотр прод-сборки
+npm run build
 ```
-
----
-
-## Структура проекта
-
-- `releases/` — готовые бинарники (`metallcalc.exe`, `metallcalc-setup.exe`, `metallcalc-arm64-release.apk`)
-- `src/lib/materialData.js` — типы профилей, формулы, `calcVolume()` (из `material_data.dart`)
-- `src/lib/calculator.js` — расчёт массы и массы 1 п.м. (из `calculator.dart`)
-- `src/lib/materialsDb.js` — база материалов и плотностей (из `materials_db.dart`)
-- `src/lib/prefs.js` — сохранение выбора в `localStorage` (замена `shared_preferences`)
-- `src/components/`
-  - `ProfileSelector.svelte` — выбор формы проката (с плавным выпадающим меню, защитой от переполнения и анимацией шеврона)
-  - `DimensionInputs.svelte` — динамические поля ввода размеров с плавной сменой раскладки (аналог `AnimatedSize` и `AnimatedSwitcher`)
-  - `MaterialSelector.svelte` — выбор материала и марки (по умолчанию при первом запуске — **Цинк**, марка `Ц0 / ЦВ0`, $\rho = 7.13$ г/см³)
-  - `ResultDisplay.svelte` — карточка результата с плавной анимацией появления (`fly`/`fade`), анимированным снэкбаром и обратной связью копирования
-  - `ProfileIcon.svelte` — векторные SVG-иконки профилей
-- `src/App.svelte` — главный экран с адаптивной раскладкой (двухколоночный макет при ширине > 700px)
-- `src/app.css` — стилизация и поддержка светлой/тёмной темы
-
----
-
-## Анимации интерфейса
-
-В веб/десктоп интерфейс перенесены и улучшены анимации из Flutter-версии:
-- **Плавное переключение профилей и полей ввода**: анимации `fly` / `fade` с кривой `cubicOut` при смене формы проката и количества параметров.
-- **Выпадающие списки**: анимация выпадания меню с `backdrop-filter: blur`, плавный поворот стрелки-шеврона на $180^\circ$.
-- **Появление результатов**: плавный переход из пустого состояния в карточку результатов с мягким вертикальным смещением (`fly`).
-- **Снэкбар и копирование**: анимированное всплывающее уведомление о копировании с автоматическим скрытием и индикацией на кнопке.
-- **Микро-взаимодействия**: эффект нажатия кнопок (`active scale 0.96-0.98`), подсветка активных полей ввода.
-
----
-
-## Сборка Android APK и подпись
-
-- Конфигурация подписи настроена в `src-tauri/gen/android/app/build.gradle.kts`.
-- Релизный ключ: `src-tauri/gen/android/release.keystore`.
-- Параметры ключа: `src-tauri/gen/android/keystore.properties`.
-- Иконки приложения перенесены из оригинального проекта и сгенерированы для всех разрешений Windows, Android и Web (`favicon.png`).
-- При сборке через `build-apk.bat` готовый подписанный APK помещается напрямую в `dist\metallcalc-arm64-release.apk`.
+Подключите результат сборки из `dist/`:
+```html
+<link rel="stylesheet" href="assets/index.css">
+<div id="app"></div>
+<script type="module" src="assets/index.js"></script>
+```
